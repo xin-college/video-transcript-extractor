@@ -376,6 +376,15 @@ crypto-js/mode-ctr-gladman.js:
             </button>
           </div>
 
+          <div class="flex items-center justify-between pt-1 px-1 text-[11px] theme-sub">
+            <span class="opacity-70">✨ 永久免费 · 无时长限制</span>
+            <label for="localMediaUpload" class="text-[#5b86b6] hover:underline cursor-pointer flex items-center gap-1 font-medium">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+              <span>本地音视频直接转写</span>
+            </label>
+            <input id="localMediaUpload" type="file" accept="audio/*,video/*" class="hidden">
+          </div>
+
         </div>
 
         <!-- Live Status / Progress Bar (Hidden when idle) -->
@@ -1074,9 +1083,46 @@ crypto-js/mode-ctr-gladman.js:
       } catch (err) {
         console.error("Extraction error:", err);
         statusMessage.innerText = "提取遇到波动: " + (err.message || "请求失败");
+        showErrorInTranscriptBox("提取任务创建失败", err.message || "无法连接到云端解析服务，请检查网络后重试。");
         resetLoading();
         showToast(err.message || "提取失败，请重试", "❌");
       }
+    }
+
+    function showErrorInTranscriptBox(title, message, isTimeout = false) {
+      const box = document.getElementById("transcriptBox");
+      const transLangLabel = document.getElementById("transLangLabel");
+      const resWordsBadge = document.getElementById("resWordsBadge");
+      if (transLangLabel) transLangLabel.innerText = "未完成";
+      if (resWordsBadge) resWordsBadge.innerText = "⚠️ 提取中断";
+
+      box.innerHTML = `
+        <div class="py-8 px-6 text-center space-y-4 rounded-2xl border border-dashed border-amber-500/40 bg-amber-500/5 my-2">
+          <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl font-bold">
+            ${isTimeout ? "⏱️" : "⚠️"}
+          </div>
+          <div class="space-y-1">
+            <h4 class="font-bold text-base theme-title">${title}</h4>
+            <p class="text-xs theme-sub max-w-md mx-auto leading-relaxed">
+              ${message}
+            </p>
+          </div>
+          <div class="text-xs theme-sub text-left max-w-md mx-auto space-y-1.5 p-3.5 rounded-xl bg-slate-500/5 border border-slate-500/10">
+            <p class="font-semibold theme-title">💡 建议排查与解决：</p>
+            <p>1. <strong>检查链接有效性</strong>：请在浏览器打开该链接，确保视频未被作者设为私密或删除；</p>
+            <p>2. <strong>重新提取</strong>：长视频首次下载偶有网络波动，点击下方按钮重试；</p>
+            <p>3. <strong>本地文件极速转写（强烈推荐）</strong>：如果您已下载该视频/音频，可直接<strong>上传文件</strong>，配合您的 Gemini Key 3 秒 100% 极速转写！</p>
+          </div>
+          <div class="flex items-center justify-center gap-3 pt-2">
+            <button onclick="startExtraction()" class="theme-btn-pri px-4 py-2 rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1.5">
+              <span>🔄 重新尝试提取</span>
+            </button>
+            <button onclick="document.getElementById('localMediaUpload').click()" class="theme-btn-sec px-4 py-2 rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1.5">
+              <span>📁 上传音视频直接转写</span>
+            </button>
+          </div>
+        </div>
+      `;
     }
 
     function pollTask(taskId, token, rawInputText) {
@@ -1115,13 +1161,41 @@ crypto-js/mode-ctr-gladman.js:
               document.getElementById("resDurationBadge").innerText = "⏱️ " + formatDuration(task.duration);
             }
 
-            // 2. FAST-TRACK GEMINI: If audioUrl is available AND user configured a Gemini Key:
+            // 2. TIMEOUT DETECTION: If stuck in WAITING with zero metadata for > 45s (22 attempts),
+            // The crawler failed on this link (invalid/deleted/blocked). Don't leave user hanging!
+            if (attempts >= 23 && !task.audioUrl && !task.videoUrl && !task.cover) {
+              clearInterval(pollTimer);
+              showErrorInTranscriptBox(
+                "作品解析超时（未获取到音视频流）",
+                "云端爬虫在 45 秒内未成功读取到该作品内容。这通常由于链接已失效、内容受作者隐私保护或为非单作品链接导致。",
+                true
+              );
+              resetLoading();
+              const statusCard = document.getElementById("statusCard");
+              if (statusCard) statusCard.classList.add("hidden");
+              return;
+            }
+
+            // 3. FAST-TRACK GEMINI: If audioUrl is available AND user configured a Gemini Key:
             // Intercept immediately without waiting for slow cloud queue!
             if (task.audioUrl && geminiKey && task.status !== "SUCCESS") {
               clearInterval(pollTimer);
               document.getElementById("statusMessage").innerText = "⚡ 原声音频流已就绪！正在调用 Google Gemini Flash 免费大模型逐字生成文案...";
               document.getElementById("statusStep").innerText = "步骤 3/3 · AI 免费转写";
               document.getElementById("progressBar").style.width = "75%";
+
+              // Live feedback inside transcript area
+              const box = document.getElementById("transcriptBox");
+              if (box) {
+                box.innerHTML = `
+                  <div class="py-12 px-4 text-center space-y-3">
+                    <div class="w-10 h-10 mx-auto rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center animate-spin text-xl font-bold">⚡</div>
+                    <div class="font-bold text-sm theme-title">原声音频流已就绪！正在调用 Gemini Flash 生成全文逐字稿</div>
+                    <p class="text-xs theme-sub max-w-sm mx-auto">AI 大模型正在高保真转写并智能添加标点，预计 5~10 秒完成...</p>
+                  </div>
+                `;
+              }
+
               try {
                 const transcript = await transcribeWithGeminiApi(task.audioUrl, geminiKey);
                 task.textContent = transcript;
@@ -1142,12 +1216,12 @@ crypto-js/mode-ctr-gladman.js:
               finishWithResult(task, rawInputText);
             } else if (task.status === "FAILURE") {
               clearInterval(pollTimer);
-              // Handle any failure where audioUrl is available via Gemini fallback
+              // Handle quota failure where audioUrl is available via Gemini fallback
               if (task.audioUrl) {
                 handleQuotaFallback(task, rawInputText);
                 return;
               }
-              showToast(task.errorMessage || "文案提取失败，请重试", "❌");
+              showErrorInTranscriptBox("作品提取失败", task.errorMessage || "云端未能从该链接中解析出音视频内容，请检查链接或重试。");
               resetLoading();
               const statusCard = document.getElementById("statusCard");
               if (statusCard) statusCard.classList.add("hidden");
@@ -1168,6 +1242,13 @@ crypto-js/mode-ctr-gladman.js:
               document.getElementById("statusStep").innerText = step;
               const w = Math.min(92, 45 + attempts * 1.5);
               document.getElementById("progressBar").style.width = w + "%";
+
+              // Update timer in transcriptBox subtitle
+              const box = document.getElementById("transcriptBox");
+              const timerSub = box?.querySelector(".poll-timer-text");
+              if (timerSub) {
+                timerSub.innerText = `正在抓取原画封面、无水印视频与音轨 (${attempts * 2}s)，请稍候...`;
+              }
             }
           }
         } catch (e) {
@@ -1176,7 +1257,11 @@ crypto-js/mode-ctr-gladman.js:
 
         if (attempts >= maxAttempts) {
           clearInterval(pollTimer);
-          showToast("作品处理超时，已展示当前提取状态", "⚠️");
+          showErrorInTranscriptBox(
+            "任务处理超时",
+            "长视频音轨抓取超时，请确认该视频是否可正常播放，或尝试直接上传音视频文件进行极速转写。",
+            true
+          );
           resetLoading();
           const statusCard = document.getElementById("statusCard");
           if (statusCard) statusCard.classList.add("hidden");
@@ -1185,28 +1270,42 @@ crypto-js/mode-ctr-gladman.js:
     }
 
     // --- 100% Free Gemini Flash Audio Transcription Engine ---
-    async function transcribeWithGeminiApi(audioUrl, apiKey) {
+    async function transcribeWithGeminiApi(audioUrlOrBase64, apiKey, customMimeType = "audio/mp3") {
       const statusMessage = document.getElementById("statusMessage");
       const cleanKey = (apiKey || "").trim();
       if (!cleanKey) {
         throw new Error("请先提供有效的 Google Gemini API Key");
       }
 
-      if (statusMessage) statusMessage.innerText = "正在下载原声音频并加载 AI 模型...";
+      let base64Audio = "";
+      let mimeType = customMimeType;
 
-      const audioResp = await fetch(audioUrl);
-      if (!audioResp.ok) throw new Error("无法下载音频文件: HTTP " + audioResp.status);
-      const blob = await audioResp.blob();
-      
-      const base64Audio = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const res = reader.result;
-          resolve(res.split(",")[1]);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
+      if (audioUrlOrBase64.startsWith("data:") || (audioUrlOrBase64.length > 500 && !audioUrlOrBase64.startsWith("http"))) {
+        base64Audio = audioUrlOrBase64.replace(/^data:[^;]+;base64,/, "");
+      } else {
+        if (statusMessage) statusMessage.innerText = "正在下载原声音频并加载 AI 模型...";
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 45000);
+        let audioResp;
+        try {
+          audioResp = await fetch(audioUrlOrBase64, { signal: controller.signal });
+        } finally {
+          clearTimeout(timeoutId);
+        }
+        if (!audioResp.ok) throw new Error("无法下载音频文件: HTTP " + audioResp.status);
+        const blob = await audioResp.blob();
+        mimeType = blob.type || "audio/mp3";
+
+        base64Audio = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const res = reader.result;
+            resolve(res.split(",")[1]);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
 
       if (statusMessage) statusMessage.innerText = "正在调用 Gemini Flash 生成精准逐字稿...";
 
@@ -1221,12 +1320,12 @@ crypto-js/mode-ctr-gladman.js:
               parts: [
                 {
                   inlineData: {
-                    mimeType: blob.type || "audio/mp3",
+                    mimeType: mimeType,
                     data: base64Audio
                   }
                 },
                 {
-                  text: "请将这段音频中的语音完整转录为中文文本（逐字稿）。要求：1. 保持原声发言原意，准确转写；2. 自动添加规范中文标点（逗号、句号、问号）；3. 根据语意和逻辑停顿合理分段；4. 直接输出转写文本正文，严禁输出任何开场白或解释语。"
+                  text: "请将这段音视频中的语音完整转录为中文文本（逐字稿）。要求：1. 保持原声发言原意，准确转写；2. 自动添加规范中文标点（逗号、句号、问号）；3. 根据语意和逻辑停顿合理分段；4. 直接输出转写文本正文，严禁输出任何开场白或解释语。"
                 }
               ]
             }],
@@ -1236,11 +1335,19 @@ crypto-js/mode-ctr-gladman.js:
             }
           };
 
-          const res = await fetch(apiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
+          const gController = new AbortController();
+          const gTimeoutId = setTimeout(() => gController.abort(), 60000);
+          let res;
+          try {
+            res = await fetch(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+              signal: gController.signal
+            });
+          } finally {
+            clearTimeout(gTimeoutId);
+          }
 
           if (!res.ok) {
             const errBody = await res.text();
@@ -1348,6 +1455,84 @@ crypto-js/mode-ctr-gladman.js:
           showToast(e.message || "转写失败，请检查 Key 是否有效", "❌");
           btn.disabled = false;
           btn.innerText = "重新尝试转写";
+        }
+      });
+    }
+
+    function initLocalMediaUpload() {
+      const fileInput = document.getElementById("localMediaUpload");
+      if (!fileInput) return;
+
+      fileInput.addEventListener("change", async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const geminiKey = safeGetStorage("douyin_gemini_key");
+        const cleanTitle = file.name.replace(/\.[^/.]+$/, "");
+
+        // Immediate visual setup
+        document.getElementById("resTitle").innerText = cleanTitle;
+        document.getElementById("resDescSnippet").innerText = `本地上传文件 (${(file.size / 1024 / 1024).toFixed(1)} MB · ${file.type || "audio/mp3"})`;
+        document.getElementById("resDurationBadge").innerText = "⏱️ 本地媒体";
+        document.getElementById("resWordsBadge").innerText = "✍️ 转写中...";
+        document.getElementById("transLangLabel").innerText = "AI 识别中";
+
+        const thumb = document.getElementById("resCoverThumb");
+        if (thumb) {
+          thumb.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none'%3E%3Crect width='100' height='100' rx='16' fill='%235b86b6' fill-opacity='0.18'/%3E%3Cpath d='M30 40h40v30a5 5 0 01-5 5H35a5 5 0 01-5-5V40z' stroke='%235b86b6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M40 30h20v10H40z' fill='%235b86b6'/%3E%3C/svg%3E";
+          thumb.classList.remove("hidden");
+        }
+
+        const box = document.getElementById("transcriptBox");
+        box.innerHTML = `
+          <div class="py-12 px-4 text-center space-y-3">
+            <div class="w-10 h-10 mx-auto rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center animate-spin text-xl font-bold">⚡</div>
+            <div class="font-bold text-sm theme-title">正在使用 Gemini 免费引擎直接转写本地媒体文件</div>
+            <p class="text-xs theme-sub max-w-sm mx-auto">文件大小: ${(file.size / 1024 / 1024).toFixed(1)} MB，正在调用 Gemini Flash...</p>
+          </div>
+        `;
+
+        if (!geminiKey) {
+          const fakeTask = {
+            title: cleanTitle,
+            content: file.name,
+            duration: 0,
+            audioUrl: ""
+          };
+          showLongVideoKeyPrompt(fakeTask);
+          showToast("请先输入免费 Gemini API Key 即可转写本地文件！", "💡");
+          return;
+        }
+
+        try {
+          const base64Data = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const res = reader.result;
+              resolve(res.split(",")[1]);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+
+          const transcript = await transcribeWithGeminiApi(base64Data, geminiKey, file.type || "audio/mp3");
+          const localTask = {
+            title: cleanTitle,
+            content: `【本地文件】${file.name}`,
+            textContent: transcript,
+            duration: 0,
+            platform: "local",
+            audioUrl: URL.createObjectURL(file),
+            videoUrl: file.type.startsWith("video") ? URL.createObjectURL(file) : "",
+            cover: ""
+          };
+          finishWithResult(localTask, file.name);
+          showToast("本地音视频全文逐字稿生成成功！", "🎉");
+        } catch (err) {
+          console.error("Local file transcribe failed:", err);
+          showErrorInTranscriptBox("本地音视频转写失败", err.message || "无法完成转写，请检查 API Key 是否有效。");
+        } finally {
+          fileInput.value = "";
         }
       });
     }
@@ -1687,10 +1872,11 @@ crypto-js/mode-ctr-gladman.js:
       }
     });
 
-    // --- On Load: Initialize Theme, Engine Settings and Preloaded Task ---
+    // --- On Load: Initialize Theme, Engine Settings, Local Upload and Preloaded Task ---
     window.addEventListener("DOMContentLoaded", () => {
       initTheme();
       initEngineSettings();
+      initLocalMediaUpload();
       document.getElementById("urlInput").value = "3.58 复制打开抖音，看看【知禾有术的作品】客户问“你们和某某家有什么区别”？ 3步回应，把比... https://v.douyin.com/GkqOrmqWLRs/ :7pm 07/06 P@k.pD uSL:/";
       renderResults(PRELOADED_TASK);
     });
