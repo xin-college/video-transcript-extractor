@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>视频文案提取器</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script>
+    (()=>{var Cx=(s=>typeof require<"u"?require:typeof Proxy<"u"?new Proxy(s,{get:(x,A)=>(typeof require<"u"?require:x)[A]}):s)(function(s){if(typeof require<"u")return require.apply(this,arguments);throw Error('Dynamic require of "'+s+'" is not supported')});var T=(s,x)=>()=>{try{return x||s((x={exports:{}}).exports,x),x.exports}catch(A){throw x=0,A}};var Ex=T(()=>{});var X=T((u0,Ax)=>{(function(s,x){typeof u0=="object"?Ax.exports=u0=x():typeof define=="function"&&define.amd?define([],x):s.CryptoJS=x()})(u0,function(){var s=s||(function(x,A){var E;if(typeof window<"u"&&window.crypto&&(E=window.crypto),typeof self<"u"&&self.crypto&&(E=self.crypto),typeof globalThis<"u"&&globalThis.crypto&&(E=globalThis.crypto),!E&&typeof window<"u"&&window.msCrypto&&(E=window.msCrypto),!E&&typeof global<"u"&&global.crypto&&(E=global.crypto),!E&&typeof Cx=="function")try{E=Ex()}catch{}var y=function(){if(E){if(typeof E.getRandomValues=="function")try{return E.getRandomValues(new Uint32Array(1))[0]}catch{}if(typeof E.randomBytes=="function")try{return E.randomBytes(4).readInt32LE()}catch{}}throw new Error("Native crypto module could not be used to get secure random number.")},B=Object.create||(function(){function e(){}return function(i){var u;return e.prototype=i,u=new e,e.prototype=null,u}})(),D={},r=D.lib={},n=r.Base=(function(){return{extend:function(e){var i=B(this);return e&&i.mixIn(e),(!i.hasOwnProperty("init")||this.init===i.init)&&(i.init=function(){i.$super.init.apply(this,arguments)}),i.init.prototype=i,i.$super=this,i},create:function(){var e=this.extend();return e.init.apply(e,arguments),e},init:function(){},mixIn:function(e){for(var i in e)e.hasOwnProperty(i)&&(this[i]=e[i]);e.hasOwnProperty("toString")&&(this.toString=e.toString)},clone:function(){return this.init.prototype.extend(this)}}})(),v=r.WordArray=n.extend({init:function(e,i){e=this.words=e||[],i!=A?this.sigBytes=i:this.sigBytes=e.length*4},toString:function(e){return(e||c).stringify(this)},concat:function(e){var i=this.words,u=e.words,d=this.sigBytes,C=e.sigBytes;if(this.clamp(),d%4)for(var F=0;F<C;F++){var w=u[F>>>2]>>>24-F%4*8&255;i[d+F>>>2]|=w<<24-(d+F)%4*8}else for(var H=0;H<C;H+=4)i[d+H>>>2]=u[H>>>2];return this.sigBytes+=C,this},clamp:function(){var e=this.words,i=this.sigBytes;e[i>>>2]&=4294967295<<32-i%4*8,e.length=x.ceil(i/4)},clone:function(){var e=n.clone.call(this);return e.words=this.words.slice(0),e},random:function(e){for(var i=[],u=0;u<e;u+=4)i.push(y());return new v.init(i,e)}}),t=D.enc={},c=t.Hex={stringify:function(e){for(var i=e.words,u=e.sigBytes,d=[],C=0;C<u;C++){var F=i[C>>>2]>>>24-C%4*8&255;d.push((F>>>4).toString(16)),d.push((F&15).toString(16))}return d.join("")},parse:function(e){for(var i=e.length,u=[],d=0;d<i;d+=2)u[d>>>3]|=parseInt(e.substr(d,2),16)<<24-d%8*4;return new v.init(u,i/2)}},a=t.Latin1={stringify:function(e){for(var i=e.words,u=e.sigBytes,d=[],C=0;C<u;C++){var F=i[C>>>2]>>>24-C%4*8&255;d.push(String.fromCharCode(F))}return d.join("")},parse:function(e){for(var i=e.length,u=[],d=0;d<i;d++)u[d>>>2]|=(e.charCodeAt(d)&255)<<24-d%4*8;return new v.init(u,i)}},o=t.Utf8={stringify:function(e){try{return decodeURIComponent(escape(a.stringify(e)))}catch{throw new Error("Malformed UTF-8 data")}},parse:function(e){return a.parse(unescape(encodeURIComponent(e)))}},f=r.BufferedBlockAlgorithm=n.extend({reset:function(){this._data=new v.init,this._nDataBytes=0},_append:function(e){typeof e=="string"&&(e=o.parse(e)),this._data.concat(e),this._nDataBytes+=e.sigBytes},_process:function(e){var i,u=this._data,d=u.words,C=u.sigBytes,F=this.blockSize,w=F*4,H=C/w;e?H=x.ceil(H):H=x.max((H|0)-this._minBufferSize,0);var q=H*F,R=x.min(q*4,C);if(q){for(var p=0;p<q;p+=F)this._doProcessBlock(d,p);i=d.splice(0,q),u.sigBytes-=R}return new v.init(i,R)},clone:function(){var e=n.clone.call(this);return e._data=this._data.clone(),e},_minBufferSize:0}),h=r.Hasher=f.extend({cfg:n.extend(),init:function(e){this.cfg=this.cfg.extend(e),this.reset()},reset:function(){f.reset.call(this),this._doReset()},update:function(e){return this._append(e),this._process(),this},finalize:function(e){e&&this._append(e);var i=this._doFinalize();return i},blockSize:512/32,_createHelper:function(e){return function(i,u){return new e.init(u).finalize(i)}},_createHmacHelper:function(e){return function(i,u){return new l.HMAC.init(e,u).finalize(i)}}}),l=D.algo={};return D})(Math);return s})});var d0=T((C0,Fx)=>{(function(s,x){typeof C0=="object"?Fx.exports=C0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(C0,function(s){return(function(x){var A=s,E=A.lib,y=E.Base,B=E.WordArray,D=A.x64={},r=D.Word=y.extend({init:function(v,t){this.high=v,this.low=t}}),n=D.WordArray=y.extend({init:function(v,t){v=this.words=v||[],t!=x?this.sigBytes=t:this.sigBytes=v.length*8},toX32:function(){for(var v=this.words,t=v.length,c=[],a=0;a<t;a++){var o=v[a];c.push(o.high),c.push(o.low)}return B.create(c,this.sigBytes)},clone:function(){for(var v=y.clone.call(this),t=v.words=this.words.slice(0),c=t.length,a=0;a<c;a++)t[a]=t[a].clone();return v}})})(),s})});var px=T((E0,Dx)=>{(function(s,x){typeof E0=="object"?Dx.exports=E0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(E0,function(s){return(function(){if(typeof ArrayBuffer=="function"){var x=s,A=x.lib,E=A.WordArray,y=E.init,B=E.init=function(D){if(D instanceof ArrayBuffer&&(D=new Uint8Array(D)),(D instanceof Int8Array||typeof Uint8ClampedArray<"u"&&D instanceof Uint8ClampedArray||D instanceof Int16Array||D instanceof Uint16Array||D instanceof Int32Array||D instanceof Uint32Array||D instanceof Float32Array||D instanceof Float64Array)&&(D=new Uint8Array(D.buffer,D.byteOffset,D.byteLength)),D instanceof Uint8Array){for(var r=D.byteLength,n=[],v=0;v<r;v++)n[v>>>2]|=D[v]<<24-v%4*8;y.call(this,n,r)}else y.apply(this,arguments)};B.prototype=E}})(),s.lib.WordArray})});var bx=T((A0,_x)=>{(function(s,x){typeof A0=="object"?_x.exports=A0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(A0,function(s){return(function(){var x=s,A=x.lib,E=A.WordArray,y=x.enc,B=y.Utf16=y.Utf16BE={stringify:function(r){for(var n=r.words,v=r.sigBytes,t=[],c=0;c<v;c+=2){var a=n[c>>>2]>>>16-c%4*8&65535;t.push(String.fromCharCode(a))}return t.join("")},parse:function(r){for(var n=r.length,v=[],t=0;t<n;t++)v[t>>>1]|=r.charCodeAt(t)<<16-t%2*16;return E.create(v,n*2)}};y.Utf16LE={stringify:function(r){for(var n=r.words,v=r.sigBytes,t=[],c=0;c<v;c+=2){var a=D(n[c>>>2]>>>16-c%4*8&65535);t.push(String.fromCharCode(a))}return t.join("")},parse:function(r){for(var n=r.length,v=[],t=0;t<n;t++)v[t>>>1]|=D(r.charCodeAt(t)<<16-t%2*16);return E.create(v,n*2)}};function D(r){return r<<8&4278255360|r>>>8&16711935}})(),s.enc.Utf16})});var x0=T((F0,yx)=>{(function(s,x){typeof F0=="object"?yx.exports=F0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(F0,function(s){return(function(){var x=s,A=x.lib,E=A.WordArray,y=x.enc,B=y.Base64={stringify:function(r){var n=r.words,v=r.sigBytes,t=this._map;r.clamp();for(var c=[],a=0;a<v;a+=3)for(var o=n[a>>>2]>>>24-a%4*8&255,f=n[a+1>>>2]>>>24-(a+1)%4*8&255,h=n[a+2>>>2]>>>24-(a+2)%4*8&255,l=o<<16|f<<8|h,e=0;e<4&&a+e*.75<v;e++)c.push(t.charAt(l>>>6*(3-e)&63));var i=t.charAt(64);if(i)for(;c.length%4;)c.push(i);return c.join("")},parse:function(r){var n=r.length,v=this._map,t=this._reverseMap;if(!t){t=this._reverseMap=[];for(var c=0;c<v.length;c++)t[v.charCodeAt(c)]=c}var a=v.charAt(64);if(a){var o=r.indexOf(a);o!==-1&&(n=o)}return D(r,n,t)},_map:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="};function D(r,n,v){for(var t=[],c=0,a=0;a<n;a++)if(a%4){var o=v[r.charCodeAt(a-1)]<<a%4*2,f=v[r.charCodeAt(a)]>>>6-a%4*2,h=o|f;t[c>>>2]|=h<<24-c%4*8,c++}return E.create(t,c)}})(),s.enc.Base64})});var kx=T((D0,gx)=>{(function(s,x){typeof D0=="object"?gx.exports=D0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(D0,function(s){return(function(){var x=s,A=x.lib,E=A.WordArray,y=x.enc,B=y.Base64url={stringify:function(r,n){n===void 0&&(n=!0);var v=r.words,t=r.sigBytes,c=n?this._safe_map:this._map;r.clamp();for(var a=[],o=0;o<t;o+=3)for(var f=v[o>>>2]>>>24-o%4*8&255,h=v[o+1>>>2]>>>24-(o+1)%4*8&255,l=v[o+2>>>2]>>>24-(o+2)%4*8&255,e=f<<16|h<<8|l,i=0;i<4&&o+i*.75<t;i++)a.push(c.charAt(e>>>6*(3-i)&63));var u=c.charAt(64);if(u)for(;a.length%4;)a.push(u);return a.join("")},parse:function(r,n){n===void 0&&(n=!0);var v=r.length,t=n?this._safe_map:this._map,c=this._reverseMap;if(!c){c=this._reverseMap=[];for(var a=0;a<t.length;a++)c[t.charCodeAt(a)]=a}var o=t.charAt(64);if(o){var f=r.indexOf(o);f!==-1&&(v=f)}return D(r,v,c)},_map:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",_safe_map:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"};function D(r,n,v){for(var t=[],c=0,a=0;a<n;a++)if(a%4){var o=v[r.charCodeAt(a-1)]<<a%4*2,f=v[r.charCodeAt(a)]>>>6-a%4*2,h=o|f;t[c>>>2]|=h<<24-c%4*8,c++}return E.create(t,c)}})(),s.enc.Base64url})});var e0=T((p0,mx)=>{(function(s,x){typeof p0=="object"?mx.exports=p0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(p0,function(s){return(function(x){var A=s,E=A.lib,y=E.WordArray,B=E.Hasher,D=A.algo,r=[];(function(){for(var o=0;o<64;o++)r[o]=x.abs(x.sin(o+1))*4294967296|0})();var n=D.MD5=B.extend({_doReset:function(){this._hash=new y.init([1732584193,4023233417,2562383102,271733878])},_doProcessBlock:function(o,f){for(var h=0;h<16;h++){var l=f+h,e=o[l];o[l]=(e<<8|e>>>24)&16711935|(e<<24|e>>>8)&4278255360}var i=this._hash.words,u=o[f+0],d=o[f+1],C=o[f+2],F=o[f+3],w=o[f+4],H=o[f+5],q=o[f+6],R=o[f+7],p=o[f+8],S=o[f+9],z=o[f+10],k=o[f+11],P=o[f+12],W=o[f+13],L=o[f+14],K=o[f+15],_=i[0],g=i[1],m=i[2],b=i[3];_=v(_,g,m,b,u,7,r[0]),b=v(b,_,g,m,d,12,r[1]),m=v(m,b,_,g,C,17,r[2]),g=v(g,m,b,_,F,22,r[3]),_=v(_,g,m,b,w,7,r[4]),b=v(b,_,g,m,H,12,r[5]),m=v(m,b,_,g,q,17,r[6]),g=v(g,m,b,_,R,22,r[7]),_=v(_,g,m,b,p,7,r[8]),b=v(b,_,g,m,S,12,r[9]),m=v(m,b,_,g,z,17,r[10]),g=v(g,m,b,_,k,22,r[11]),_=v(_,g,m,b,P,7,r[12]),b=v(b,_,g,m,W,12,r[13]),m=v(m,b,_,g,L,17,r[14]),g=v(g,m,b,_,K,22,r[15]),_=t(_,g,m,b,d,5,r[16]),b=t(b,_,g,m,q,9,r[17]),m=t(m,b,_,g,k,14,r[18]),g=t(g,m,b,_,u,20,r[19]),_=t(_,g,m,b,H,5,r[20]),b=t(b,_,g,m,z,9,r[21]),m=t(m,b,_,g,K,14,r[22]),g=t(g,m,b,_,w,20,r[23]),_=t(_,g,m,b,S,5,r[24]),b=t(b,_,g,m,L,9,r[25]),m=t(m,b,_,g,F,14,r[26]),g=t(g,m,b,_,p,20,r[27]),_=t(_,g,m,b,W,5,r[28]),b=t(b,_,g,m,C,9,r[29]),m=t(m,b,_,g,R,14,r[30]),g=t(g,m,b,_,P,20,r[31]),_=c(_,g,m,b,H,4,r[32]),b=c(b,_,g,m,p,11,r[33]),m=c(m,b,_,g,k,16,r[34]),g=c(g,m,b,_,L,23,r[35]),_=c(_,g,m,b,d,4,r[36]),b=c(b,_,g,m,w,11,r[37]),m=c(m,b,_,g,R,16,r[38]),g=c(g,m,b,_,z,23,r[39]),_=c(_,g,m,b,W,4,r[40]),b=c(b,_,g,m,u,11,r[41]),m=c(m,b,_,g,F,16,r[42]),g=c(g,m,b,_,q,23,r[43]),_=c(_,g,m,b,S,4,r[44]),b=c(b,_,g,m,P,11,r[45]),m=c(m,b,_,g,K,16,r[46]),g=c(g,m,b,_,C,23,r[47]),_=a(_,g,m,b,u,6,r[48]),b=a(b,_,g,m,R,10,r[49]),m=a(m,b,_,g,L,15,r[50]),g=a(g,m,b,_,H,21,r[51]),_=a(_,g,m,b,P,6,r[52]),b=a(b,_,g,m,F,10,r[53]),m=a(m,b,_,g,z,15,r[54]),g=a(g,m,b,_,d,21,r[55]),_=a(_,g,m,b,p,6,r[56]),b=a(b,_,g,m,K,10,r[57]),m=a(m,b,_,g,q,15,r[58]),g=a(g,m,b,_,W,21,r[59]),_=a(_,g,m,b,w,6,r[60]),b=a(b,_,g,m,k,10,r[61]),m=a(m,b,_,g,C,15,r[62]),g=a(g,m,b,_,S,21,r[63]),i[0]=i[0]+_|0,i[1]=i[1]+g|0,i[2]=i[2]+m|0,i[3]=i[3]+b|0},_doFinalize:function(){var o=this._data,f=o.words,h=this._nDataBytes*8,l=o.sigBytes*8;f[l>>>5]|=128<<24-l%32;var e=x.floor(h/4294967296),i=h;f[(l+64>>>9<<4)+15]=(e<<8|e>>>24)&16711935|(e<<24|e>>>8)&4278255360,f[(l+64>>>9<<4)+14]=(i<<8|i>>>24)&16711935|(i<<24|i>>>8)&4278255360,o.sigBytes=(f.length+1)*4,this._process();for(var u=this._hash,d=u.words,C=0;C<4;C++){var F=d[C];d[C]=(F<<8|F>>>24)&16711935|(F<<24|F>>>8)&4278255360}return u},clone:function(){var o=B.clone.call(this);return o._hash=this._hash.clone(),o}});function v(o,f,h,l,e,i,u){var d=o+(f&h|~f&l)+e+u;return(d<<i|d>>>32-i)+f}function t(o,f,h,l,e,i,u){var d=o+(f&l|h&~l)+e+u;return(d<<i|d>>>32-i)+f}function c(o,f,h,l,e,i,u){var d=o+(f^h^l)+e+u;return(d<<i|d>>>32-i)+f}function a(o,f,h,l,e,i,u){var d=o+(h^(f|~l))+e+u;return(d<<i|d>>>32-i)+f}A.MD5=B._createHelper(n),A.HmacMD5=B._createHmacHelper(n)})(Math),s.MD5})});var rx=T((_0,Hx)=>{(function(s,x){typeof _0=="object"?Hx.exports=_0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(_0,function(s){return(function(){var x=s,A=x.lib,E=A.WordArray,y=A.Hasher,B=x.algo,D=[],r=B.SHA1=y.extend({_doReset:function(){this._hash=new E.init([1732584193,4023233417,2562383102,271733878,3285377520])},_doProcessBlock:function(n,v){for(var t=this._hash.words,c=t[0],a=t[1],o=t[2],f=t[3],h=t[4],l=0;l<80;l++){if(l<16)D[l]=n[v+l]|0;else{var e=D[l-3]^D[l-8]^D[l-14]^D[l-16];D[l]=e<<1|e>>>31}var i=(c<<5|c>>>27)+h+D[l];l<20?i+=(a&o|~a&f)+1518500249:l<40?i+=(a^o^f)+1859775393:l<60?i+=(a&o|a&f|o&f)-1894007588:i+=(a^o^f)-899497514,h=f,f=o,o=a<<30|a>>>2,a=c,c=i}t[0]=t[0]+c|0,t[1]=t[1]+a|0,t[2]=t[2]+o|0,t[3]=t[3]+f|0,t[4]=t[4]+h|0},_doFinalize:function(){var n=this._data,v=n.words,t=this._nDataBytes*8,c=n.sigBytes*8;return v[c>>>5]|=128<<24-c%32,v[(c+64>>>9<<4)+14]=Math.floor(t/4294967296),v[(c+64>>>9<<4)+15]=t,n.sigBytes=v.length*4,this._process(),this._hash},clone:function(){var n=y.clone.call(this);return n._hash=this._hash.clone(),n}});x.SHA1=y._createHelper(r),x.HmacSHA1=y._createHmacHelper(r)})(),s.SHA1})});var y0=T((b0,Sx)=>{(function(s,x){typeof b0=="object"?Sx.exports=b0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(b0,function(s){return(function(x){var A=s,E=A.lib,y=E.WordArray,B=E.Hasher,D=A.algo,r=[],n=[];(function(){function c(h){for(var l=x.sqrt(h),e=2;e<=l;e++)if(!(h%e))return!1;return!0}function a(h){return(h-(h|0))*4294967296|0}for(var o=2,f=0;f<64;)c(o)&&(f<8&&(r[f]=a(x.pow(o,1/2))),n[f]=a(x.pow(o,1/3)),f++),o++})();var v=[],t=D.SHA256=B.extend({_doReset:function(){this._hash=new y.init(r.slice(0))},_doProcessBlock:function(c,a){for(var o=this._hash.words,f=o[0],h=o[1],l=o[2],e=o[3],i=o[4],u=o[5],d=o[6],C=o[7],F=0;F<64;F++){if(F<16)v[F]=c[a+F]|0;else{var w=v[F-15],H=(w<<25|w>>>7)^(w<<14|w>>>18)^w>>>3,q=v[F-2],R=(q<<15|q>>>17)^(q<<13|q>>>19)^q>>>10;v[F]=H+v[F-7]+R+v[F-16]}var p=i&u^~i&d,S=f&h^f&l^h&l,z=(f<<30|f>>>2)^(f<<19|f>>>13)^(f<<10|f>>>22),k=(i<<26|i>>>6)^(i<<21|i>>>11)^(i<<7|i>>>25),P=C+k+p+n[F]+v[F],W=z+S;C=d,d=u,u=i,i=e+P|0,e=l,l=h,h=f,f=P+W|0}o[0]=o[0]+f|0,o[1]=o[1]+h|0,o[2]=o[2]+l|0,o[3]=o[3]+e|0,o[4]=o[4]+i|0,o[5]=o[5]+u|0,o[6]=o[6]+d|0,o[7]=o[7]+C|0},_doFinalize:function(){var c=this._data,a=c.words,o=this._nDataBytes*8,f=c.sigBytes*8;return a[f>>>5]|=128<<24-f%32,a[(f+64>>>9<<4)+14]=x.floor(o/4294967296),a[(f+64>>>9<<4)+15]=o,c.sigBytes=a.length*4,this._process(),this._hash},clone:function(){var c=B.clone.call(this);return c._hash=this._hash.clone(),c}});A.SHA256=B._createHelper(t),A.HmacSHA256=B._createHmacHelper(t)})(Math),s.SHA256})});var qx=T((g0,wx)=>{(function(s,x,A){typeof g0=="object"?wx.exports=g0=x(X(),y0()):typeof define=="function"&&define.amd?define(["./core","./sha256"],x):x(s.CryptoJS)})(g0,function(s){return(function(){var x=s,A=x.lib,E=A.WordArray,y=x.algo,B=y.SHA256,D=y.SHA224=B.extend({_doReset:function(){this._hash=new E.init([3238371032,914150663,812702999,4144912697,4290775857,1750603025,1694076839,3204075428])},_doFinalize:function(){var r=B._doFinalize.call(this);return r.sigBytes-=4,r}});x.SHA224=B._createHelper(D),x.HmacSHA224=B._createHmacHelper(D)})(),s.SHA224})});var tx=T((k0,zx)=>{(function(s,x,A){typeof k0=="object"?zx.exports=k0=x(X(),d0()):typeof define=="function"&&define.amd?define(["./core","./x64-core"],x):x(s.CryptoJS)})(k0,function(s){return(function(){var x=s,A=x.lib,E=A.Hasher,y=x.x64,B=y.Word,D=y.WordArray,r=x.algo;function n(){return B.create.apply(B,arguments)}var v=[n(1116352408,3609767458),n(1899447441,602891725),n(3049323471,3964484399),n(3921009573,2173295548),n(961987163,4081628472),n(1508970993,3053834265),n(2453635748,2937671579),n(2870763221,3664609560),n(3624381080,2734883394),n(310598401,1164996542),n(607225278,1323610764),n(1426881987,3590304994),n(1925078388,4068182383),n(2162078206,991336113),n(2614888103,633803317),n(3248222580,3479774868),n(3835390401,2666613458),n(4022224774,944711139),n(264347078,2341262773),n(604807628,2007800933),n(770255983,1495990901),n(1249150122,1856431235),n(1555081692,3175218132),n(1996064986,2198950837),n(2554220882,3999719339),n(2821834349,766784016),n(2952996808,2566594879),n(3210313671,3203337956),n(3336571891,1034457026),n(3584528711,2466948901),n(113926993,3758326383),n(338241895,168717936),n(666307205,1188179964),n(773529912,1546045734),n(1294757372,1522805485),n(1396182291,2643833823),n(1695183700,2343527390),n(1986661051,1014477480),n(2177026350,1206759142),n(2456956037,344077627),n(2730485921,1290863460),n(2820302411,3158454273),n(3259730800,3505952657),n(3345764771,106217008),n(3516065817,3606008344),n(3600352804,1432725776),n(4094571909,1467031594),n(275423344,851169720),n(430227734,3100823752),n(506948616,1363258195),n(659060556,3750685593),n(883997877,3785050280),n(958139571,3318307427),n(1322822218,3812723403),n(1537002063,2003034995),n(1747873779,3602036899),n(1955562222,1575990012),n(2024104815,1125592928),n(2227730452,2716904306),n(2361852424,442776044),n(2428436474,593698344),n(2756734187,3733110249),n(3204031479,2999351573),n(3329325298,3815920427),n(3391569614,3928383900),n(3515267271,566280711),n(3940187606,3454069534),n(4118630271,4000239992),n(116418474,1914138554),n(174292421,2731055270),n(289380356,3203993006),n(460393269,320620315),n(685471733,587496836),n(852142971,1086792851),n(1017036298,365543100),n(1126000580,2618297676),n(1288033470,3409855158),n(1501505948,4234509866),n(1607167915,987167468),n(1816402316,1246189591)],t=[];(function(){for(var a=0;a<80;a++)t[a]=n()})();var c=r.SHA512=E.extend({_doReset:function(){this._hash=new D.init([new B.init(1779033703,4089235720),new B.init(3144134277,2227873595),new B.init(1013904242,4271175723),new B.init(2773480762,1595750129),new B.init(1359893119,2917565137),new B.init(2600822924,725511199),new B.init(528734635,4215389547),new B.init(1541459225,327033209)])},_doProcessBlock:function(a,o){for(var f=this._hash.words,h=f[0],l=f[1],e=f[2],i=f[3],u=f[4],d=f[5],C=f[6],F=f[7],w=h.high,H=h.low,q=l.high,R=l.low,p=e.high,S=e.low,z=i.high,k=i.low,P=u.high,W=u.low,L=d.high,K=d.low,_=C.high,g=C.low,m=F.high,b=F.low,N=w,I=H,O=q,j=R,i0=p,r0=S,xx=z,n0=k,Y=P,G=W,B0=L,f0=K,h0=_,o0=g,ex=m,c0=b,$=0;$<80;$++){var Q,V,l0=t[$];if($<16)V=l0.high=a[o+$*2]|0,Q=l0.low=a[o+$*2+1]|0;else{var ix=t[$-15],t0=ix.high,s0=ix.low,me=(t0>>>1|s0<<31)^(t0>>>8|s0<<24)^t0>>>7,nx=(s0>>>1|t0<<31)^(s0>>>8|t0<<24)^(s0>>>7|t0<<25),fx=t[$-2],a0=fx.high,v0=fx.low,He=(a0>>>19|v0<<13)^(a0<<3|v0>>>29)^a0>>>6,ox=(v0>>>19|a0<<13)^(v0<<3|a0>>>29)^(v0>>>6|a0<<26),cx=t[$-7],Se=cx.high,we=cx.low,sx=t[$-16],qe=sx.high,vx=sx.low;Q=nx+we,V=me+Se+(Q>>>0<nx>>>0?1:0),Q=Q+ox,V=V+He+(Q>>>0<ox>>>0?1:0),Q=Q+vx,V=V+qe+(Q>>>0<vx>>>0?1:0),l0.high=V,l0.low=Q}var ze=Y&B0^~Y&h0,dx=G&f0^~G&o0,Re=N&O^N&i0^O&i0,We=I&j^I&r0^j&r0,Pe=(N>>>28|I<<4)^(N<<30|I>>>2)^(N<<25|I>>>7),Bx=(I>>>28|N<<4)^(I<<30|N>>>2)^(I<<25|N>>>7),Le=(Y>>>14|G<<18)^(Y>>>18|G<<14)^(Y<<23|G>>>9),je=(G>>>14|Y<<18)^(G>>>18|Y<<14)^(G<<23|Y>>>9),hx=v[$],Te=hx.high,lx=hx.low,Z=c0+je,M=ex+Le+(Z>>>0<c0>>>0?1:0),Z=Z+dx,M=M+ze+(Z>>>0<dx>>>0?1:0),Z=Z+lx,M=M+Te+(Z>>>0<lx>>>0?1:0),Z=Z+Q,M=M+V+(Z>>>0<Q>>>0?1:0),ux=Bx+We,Xe=Pe+Re+(ux>>>0<Bx>>>0?1:0);ex=h0,c0=o0,h0=B0,o0=f0,B0=Y,f0=G,G=n0+Z|0,Y=xx+M+(G>>>0<n0>>>0?1:0)|0,xx=i0,n0=r0,i0=O,r0=j,O=N,j=I,I=Z+ux|0,N=M+Xe+(I>>>0<Z>>>0?1:0)|0}H=h.low=H+I,h.high=w+N+(H>>>0<I>>>0?1:0),R=l.low=R+j,l.high=q+O+(R>>>0<j>>>0?1:0),S=e.low=S+r0,e.high=p+i0+(S>>>0<r0>>>0?1:0),k=i.low=k+n0,i.high=z+xx+(k>>>0<n0>>>0?1:0),W=u.low=W+G,u.high=P+Y+(W>>>0<G>>>0?1:0),K=d.low=K+f0,d.high=L+B0+(K>>>0<f0>>>0?1:0),g=C.low=g+o0,C.high=_+h0+(g>>>0<o0>>>0?1:0),b=F.low=b+c0,F.high=m+ex+(b>>>0<c0>>>0?1:0)},_doFinalize:function(){var a=this._data,o=a.words,f=this._nDataBytes*8,h=a.sigBytes*8;o[h>>>5]|=128<<24-h%32,o[(h+128>>>10<<5)+30]=Math.floor(f/4294967296),o[(h+128>>>10<<5)+31]=f,a.sigBytes=o.length*4,this._process();var l=this._hash.toX32();return l},clone:function(){var a=E.clone.call(this);return a._hash=this._hash.clone(),a},blockSize:1024/32});x.SHA512=E._createHelper(c),x.HmacSHA512=E._createHmacHelper(c)})(),s.SHA512})});var Wx=T((m0,Rx)=>{(function(s,x,A){typeof m0=="object"?Rx.exports=m0=x(X(),d0(),tx()):typeof define=="function"&&define.amd?define(["./core","./x64-core","./sha512"],x):x(s.CryptoJS)})(m0,function(s){return(function(){var x=s,A=x.x64,E=A.Word,y=A.WordArray,B=x.algo,D=B.SHA512,r=B.SHA384=D.extend({_doReset:function(){this._hash=new y.init([new E.init(3418070365,3238371032),new E.init(1654270250,914150663),new E.init(2438529370,812702999),new E.init(355462360,4144912697),new E.init(1731405415,4290775857),new E.init(2394180231,1750603025),new E.init(3675008525,1694076839),new E.init(1203062813,3204075428)])},_doFinalize:function(){var n=D._doFinalize.call(this);return n.sigBytes-=16,n}});x.SHA384=D._createHelper(r),x.HmacSHA384=D._createHmacHelper(r)})(),s.SHA384})});var Lx=T((H0,Px)=>{(function(s,x,A){typeof H0=="object"?Px.exports=H0=x(X(),d0()):typeof define=="function"&&define.amd?define(["./core","./x64-core"],x):x(s.CryptoJS)})(H0,function(s){return(function(x){var A=s,E=A.lib,y=E.WordArray,B=E.Hasher,D=A.x64,r=D.Word,n=A.algo,v=[],t=[],c=[];(function(){for(var f=1,h=0,l=0;l<24;l++){v[f+5*h]=(l+1)*(l+2)/2%64;var e=h%5,i=(2*f+3*h)%5;f=e,h=i}for(var f=0;f<5;f++)for(var h=0;h<5;h++)t[f+5*h]=h+(2*f+3*h)%5*5;for(var u=1,d=0;d<24;d++){for(var C=0,F=0,w=0;w<7;w++){if(u&1){var H=(1<<w)-1;H<32?F^=1<<H:C^=1<<H-32}u&128?u=u<<1^113:u<<=1}c[d]=r.create(C,F)}})();var a=[];(function(){for(var f=0;f<25;f++)a[f]=r.create()})();var o=n.SHA3=B.extend({cfg:B.cfg.extend({outputLength:512}),_doReset:function(){for(var f=this._state=[],h=0;h<25;h++)f[h]=new r.init;this.blockSize=(1600-2*this.cfg.outputLength)/32},_doProcessBlock:function(f,h){for(var l=this._state,e=this.blockSize/2,i=0;i<e;i++){var u=f[h+2*i],d=f[h+2*i+1];u=(u<<8|u>>>24)&16711935|(u<<24|u>>>8)&4278255360,d=(d<<8|d>>>24)&16711935|(d<<24|d>>>8)&4278255360;var C=l[i];C.high^=d,C.low^=u}for(var F=0;F<24;F++){for(var w=0;w<5;w++){for(var H=0,q=0,R=0;R<5;R++){var C=l[w+5*R];H^=C.high,q^=C.low}var p=a[w];p.high=H,p.low=q}for(var w=0;w<5;w++)for(var S=a[(w+4)%5],z=a[(w+1)%5],k=z.high,P=z.low,H=S.high^(k<<1|P>>>31),q=S.low^(P<<1|k>>>31),R=0;R<5;R++){var C=l[w+5*R];C.high^=H,C.low^=q}for(var W=1;W<25;W++){var H,q,C=l[W],L=C.high,K=C.low,_=v[W];_<32?(H=L<<_|K>>>32-_,q=K<<_|L>>>32-_):(H=K<<_-32|L>>>64-_,q=L<<_-32|K>>>64-_);var g=a[t[W]];g.high=H,g.low=q}var m=a[0],b=l[0];m.high=b.high,m.low=b.low;for(var w=0;w<5;w++)for(var R=0;R<5;R++){var W=w+5*R,C=l[W],N=a[W],I=a[(w+1)%5+5*R],O=a[(w+2)%5+5*R];C.high=N.high^~I.high&O.high,C.low=N.low^~I.low&O.low}var C=l[0],j=c[F];C.high^=j.high,C.low^=j.low}},_doFinalize:function(){var f=this._data,h=f.words,l=this._nDataBytes*8,e=f.sigBytes*8,i=this.blockSize*32;h[e>>>5]|=1<<24-e%32,h[(x.ceil((e+1)/i)*i>>>5)-1]|=128,f.sigBytes=h.length*4,this._process();for(var u=this._state,d=this.cfg.outputLength/8,C=d/8,F=[],w=0;w<C;w++){var H=u[w],q=H.high,R=H.low;q=(q<<8|q>>>24)&16711935|(q<<24|q>>>8)&4278255360,R=(R<<8|R>>>24)&16711935|(R<<24|R>>>8)&4278255360,F.push(R),F.push(q)}return new y.init(F,d)},clone:function(){for(var f=B.clone.call(this),h=f._state=this._state.slice(0),l=0;l<25;l++)h[l]=h[l].clone();return f}});A.SHA3=B._createHelper(o),A.HmacSHA3=B._createHmacHelper(o)})(Math),s.SHA3})});var Tx=T((S0,jx)=>{(function(s,x){typeof S0=="object"?jx.exports=S0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(S0,function(s){return(function(x){var A=s,E=A.lib,y=E.WordArray,B=E.Hasher,D=A.algo,r=y.create([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,7,4,13,1,10,6,15,3,12,0,9,5,2,14,11,8,3,10,14,4,9,15,8,1,2,7,0,6,13,11,5,12,1,9,11,10,0,8,12,4,13,3,7,15,14,5,6,2,4,0,5,9,7,12,2,10,14,1,3,8,11,6,15,13]),n=y.create([5,14,7,0,9,2,11,4,13,6,15,8,1,10,3,12,6,11,3,7,0,13,5,10,14,15,8,12,4,9,1,2,15,5,1,3,7,14,6,9,11,8,12,2,10,0,4,13,8,6,4,1,3,11,15,0,5,12,2,13,9,7,10,14,12,15,10,4,1,5,8,7,6,2,13,14,0,3,9,11]),v=y.create([11,14,15,12,5,8,7,9,11,13,14,15,6,7,9,8,7,6,8,13,11,9,7,15,7,12,15,9,11,7,13,12,11,13,6,7,14,9,13,15,14,8,13,6,5,12,7,5,11,12,14,15,14,15,9,8,9,14,5,6,8,6,5,12,9,15,5,11,6,8,13,12,5,12,13,14,11,8,5,6]),t=y.create([8,9,9,11,13,15,15,5,7,7,8,11,14,14,12,6,9,13,15,7,12,8,9,11,7,7,12,7,6,15,13,11,9,7,15,11,8,6,6,14,12,13,5,14,13,13,7,5,15,5,8,11,14,14,6,14,6,9,12,9,12,5,15,8,8,5,12,9,12,5,14,6,8,13,6,5,15,13,11,11]),c=y.create([0,1518500249,1859775393,2400959708,2840853838]),a=y.create([1352829926,1548603684,1836072691,2053994217,0]),o=D.RIPEMD160=B.extend({_doReset:function(){this._hash=y.create([1732584193,4023233417,2562383102,271733878,3285377520])},_doProcessBlock:function(d,C){for(var F=0;F<16;F++){var w=C+F,H=d[w];d[w]=(H<<8|H>>>24)&16711935|(H<<24|H>>>8)&4278255360}var q=this._hash.words,R=c.words,p=a.words,S=r.words,z=n.words,k=v.words,P=t.words,W,L,K,_,g,m,b,N,I,O;m=W=q[0],b=L=q[1],N=K=q[2],I=_=q[3],O=g=q[4];for(var j,F=0;F<80;F+=1)j=W+d[C+S[F]]|0,F<16?j+=f(L,K,_)+R[0]:F<32?j+=h(L,K,_)+R[1]:F<48?j+=l(L,K,_)+R[2]:F<64?j+=e(L,K,_)+R[3]:j+=i(L,K,_)+R[4],j=j|0,j=u(j,k[F]),j=j+g|0,W=g,g=_,_=u(K,10),K=L,L=j,j=m+d[C+z[F]]|0,F<16?j+=i(b,N,I)+p[0]:F<32?j+=e(b,N,I)+p[1]:F<48?j+=l(b,N,I)+p[2]:F<64?j+=h(b,N,I)+p[3]:j+=f(b,N,I)+p[4],j=j|0,j=u(j,P[F]),j=j+O|0,m=O,O=I,I=u(N,10),N=b,b=j;j=q[1]+K+I|0,q[1]=q[2]+_+O|0,q[2]=q[3]+g+m|0,q[3]=q[4]+W+b|0,q[4]=q[0]+L+N|0,q[0]=j},_doFinalize:function(){var d=this._data,C=d.words,F=this._nDataBytes*8,w=d.sigBytes*8;C[w>>>5]|=128<<24-w%32,C[(w+64>>>9<<4)+14]=(F<<8|F>>>24)&16711935|(F<<24|F>>>8)&4278255360,d.sigBytes=(C.length+1)*4,this._process();for(var H=this._hash,q=H.words,R=0;R<5;R++){var p=q[R];q[R]=(p<<8|p>>>24)&16711935|(p<<24|p>>>8)&4278255360}return H},clone:function(){var d=B.clone.call(this);return d._hash=this._hash.clone(),d}});function f(d,C,F){return d^C^F}function h(d,C,F){return d&C|~d&F}function l(d,C,F){return(d|~C)^F}function e(d,C,F){return d&F|C&~F}function i(d,C,F){return d^(C|~F)}function u(d,C){return d<<C|d>>>32-C}A.RIPEMD160=B._createHelper(o),A.HmacRIPEMD160=B._createHmacHelper(o)})(Math),s.RIPEMD160})});var q0=T((w0,Xx)=>{(function(s,x){typeof w0=="object"?Xx.exports=w0=x(X()):typeof define=="function"&&define.amd?define(["./core"],x):x(s.CryptoJS)})(w0,function(s){(function(){var x=s,A=x.lib,E=A.Base,y=x.enc,B=y.Utf8,D=x.algo,r=D.HMAC=E.extend({init:function(n,v){n=this._hasher=new n.init,typeof v=="string"&&(v=B.parse(v));var t=n.blockSize,c=t*4;v.sigBytes>c&&(v=n.finalize(v)),v.clamp();for(var a=this._oKey=v.clone(),o=this._iKey=v.clone(),f=a.words,h=o.words,l=0;l<t;l++)f[l]^=1549556828,h[l]^=909522486;a.sigBytes=o.sigBytes=c,this.reset()},reset:function(){var n=this._hasher;n.reset(),n.update(this._iKey)},update:function(n){return this._hasher.update(n),this},finalize:function(n){var v=this._hasher,t=v.finalize(n);v.reset();var c=v.finalize(this._oKey.clone().concat(t));return c}})})()})});var Ix=T((z0,Kx)=>{(function(s,x,A){typeof z0=="object"?Kx.exports=z0=x(X(),y0(),q0()):typeof define=="function"&&define.amd?define(["./core","./sha256","./hmac"],x):x(s.CryptoJS)})(z0,function(s){return(function(){var x=s,A=x.lib,E=A.Base,y=A.WordArray,B=x.algo,D=B.SHA256,r=B.HMAC,n=B.PBKDF2=E.extend({cfg:E.extend({keySize:128/32,hasher:D,iterations:25e4}),init:function(v){this.cfg=this.cfg.extend(v)},compute:function(v,t){for(var c=this.cfg,a=r.create(c.hasher,v),o=y.create(),f=y.create([1]),h=o.words,l=f.words,e=c.keySize,i=c.iterations;h.length<e;){var u=a.update(t).finalize(f);a.reset();for(var d=u.words,C=d.length,F=u,w=1;w<i;w++){F=a.finalize(F),a.reset();for(var H=F.words,q=0;q<C;q++)d[q]^=H[q]}o.concat(u),l[0]++}return o.sigBytes=e*4,o}});x.PBKDF2=function(v,t,c){return n.create(c).compute(v,t)}})(),s.PBKDF2})});var J=T((R0,Nx)=>{(function(s,x,A){typeof R0=="object"?Nx.exports=R0=x(X(),rx(),q0()):typeof define=="function"&&define.amd?define(["./core","./sha1","./hmac"],x):x(s.CryptoJS)})(R0,function(s){return(function(){var x=s,A=x.lib,E=A.Base,y=A.WordArray,B=x.algo,D=B.MD5,r=B.EvpKDF=E.extend({cfg:E.extend({keySize:128/32,hasher:D,iterations:1}),init:function(n){this.cfg=this.cfg.extend(n)},compute:function(n,v){for(var t,c=this.cfg,a=c.hasher.create(),o=y.create(),f=o.words,h=c.keySize,l=c.iterations;f.length<h;){t&&a.update(t),t=a.update(n).finalize(v),a.reset();for(var e=1;e<l;e++)t=a.finalize(t),a.reset();o.concat(t)}return o.sigBytes=h*4,o}});x.EvpKDF=function(n,v,t){return r.create(t).compute(n,v)}})(),s.EvpKDF})});var U=T((W0,Ux)=>{(function(s,x,A){typeof W0=="object"?Ux.exports=W0=x(X(),J()):typeof define=="function"&&define.amd?define(["./core","./evpkdf"],x):x(s.CryptoJS)})(W0,function(s){s.lib.Cipher||(function(x){var A=s,E=A.lib,y=E.Base,B=E.WordArray,D=E.BufferedBlockAlgorithm,r=A.enc,n=r.Utf8,v=r.Base64,t=A.algo,c=t.EvpKDF,a=E.Cipher=D.extend({cfg:y.extend(),createEncryptor:function(p,S){return this.create(this._ENC_XFORM_MODE,p,S)},createDecryptor:function(p,S){return this.create(this._DEC_XFORM_MODE,p,S)},init:function(p,S,z){this.cfg=this.cfg.extend(z),this._xformMode=p,this._key=S,this.reset()},reset:function(){D.reset.call(this),this._doReset()},process:function(p){return this._append(p),this._process()},finalize:function(p){p&&this._append(p);var S=this._doFinalize();return S},keySize:128/32,ivSize:128/32,_ENC_XFORM_MODE:1,_DEC_XFORM_MODE:2,_createHelper:(function(){function p(S){return typeof S=="string"?R:w}return function(S){return{encrypt:function(z,k,P){return p(k).encrypt(S,z,k,P)},decrypt:function(z,k,P){return p(k).decrypt(S,z,k,P)}}}})()}),o=E.StreamCipher=a.extend({_doFinalize:function(){var p=this._process(!0);return p},blockSize:1}),f=A.mode={},h=E.BlockCipherMode=y.extend({createEncryptor:function(p,S){return this.Encryptor.create(p,S)},createDecryptor:function(p,S){return this.Decryptor.create(p,S)},init:function(p,S){this._cipher=p,this._iv=S}}),l=f.CBC=(function(){var p=h.extend();p.Encryptor=p.extend({processBlock:function(z,k){var P=this._cipher,W=P.blockSize;S.call(this,z,k,W),P.encryptBlock(z,k),this._prevBlock=z.slice(k,k+W)}}),p.Decryptor=p.extend({processBlock:function(z,k){var P=this._cipher,W=P.blockSize,L=z.slice(k,k+W);P.decryptBlock(z,k),S.call(this,z,k,W),this._prevBlock=L}});function S(z,k,P){var W,L=this._iv;L?(W=L,this._iv=x):W=this._prevBlock;for(var K=0;K<P;K++)z[k+K]^=W[K]}return p})(),e=A.pad={},i=e.Pkcs7={pad:function(p,S){for(var z=S*4,k=z-p.sigBytes%z,P=k<<24|k<<16|k<<8|k,W=[],L=0;L<k;L+=4)W.push(P);var K=B.create(W,k);p.concat(K)},unpad:function(p){var S=p.words[p.sigBytes-1>>>2]&255;p.sigBytes-=S}},u=E.BlockCipher=a.extend({cfg:a.cfg.extend({mode:l,padding:i}),reset:function(){var p;a.reset.call(this);var S=this.cfg,z=S.iv,k=S.mode;this._xformMode==this._ENC_XFORM_MODE?p=k.createEncryptor:(p=k.createDecryptor,this._minBufferSize=1),this._mode&&this._mode.__creator==p?this._mode.init(this,z&&z.words):(this._mode=p.call(k,this,z&&z.words),this._mode.__creator=p)},_doProcessBlock:function(p,S){this._mode.processBlock(p,S)},_doFinalize:function(){var p,S=this.cfg.padding;return this._xformMode==this._ENC_XFORM_MODE?(S.pad(this._data,this.blockSize),p=this._process(!0)):(p=this._process(!0),S.unpad(p)),p},blockSize:128/32}),d=E.CipherParams=y.extend({init:function(p){this.mixIn(p)},toString:function(p){return(p||this.formatter).stringify(this)}}),C=A.format={},F=C.OpenSSL={stringify:function(p){var S,z=p.ciphertext,k=p.salt;return k?S=B.create([1398893684,1701076831]).concat(k).concat(z):S=z,S.toString(v)},parse:function(p){var S,z=v.parse(p),k=z.words;return k[0]==1398893684&&k[1]==1701076831&&(S=B.create(k.slice(2,4)),k.splice(0,4),z.sigBytes-=16),d.create({ciphertext:z,salt:S})}},w=E.SerializableCipher=y.extend({cfg:y.extend({format:F}),encrypt:function(p,S,z,k){k=this.cfg.extend(k);var P=p.createEncryptor(z,k),W=P.finalize(S),L=P.cfg;return d.create({ciphertext:W,key:z,iv:L.iv,algorithm:p,mode:L.mode,padding:L.padding,blockSize:p.blockSize,formatter:k.format})},decrypt:function(p,S,z,k){k=this.cfg.extend(k),S=this._parse(S,k.format);var P=p.createDecryptor(z,k).finalize(S.ciphertext);return P},_parse:function(p,S){return typeof p=="string"?S.parse(p,this):p}}),H=A.kdf={},q=H.OpenSSL={execute:function(p,S,z,k,P){if(k||(k=B.random(64/8)),P)var W=c.create({keySize:S+z,hasher:P}).compute(p,k);else var W=c.create({keySize:S+z}).compute(p,k);var L=B.create(W.words.slice(S),z*4);return W.sigBytes=S*4,d.create({key:W,iv:L,salt:k})}},R=E.PasswordBasedCipher=w.extend({cfg:w.cfg.extend({kdf:q}),encrypt:function(p,S,z,k){k=this.cfg.extend(k);var P=k.kdf.execute(z,p.keySize,p.ivSize,k.salt,k.hasher);k.iv=P.iv;var W=w.encrypt.call(this,p,S,P.key,k);return W.mixIn(P),W},decrypt:function(p,S,z,k){k=this.cfg.extend(k),S=this._parse(S,k.format);var P=k.kdf.execute(z,p.keySize,p.ivSize,S.salt,k.hasher);k.iv=P.iv;var W=w.decrypt.call(this,p,S,P.key,k);return W}})})()})});var Gx=T((P0,Ox)=>{(function(s,x,A){typeof P0=="object"?Ox.exports=P0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(P0,function(s){return s.mode.CFB=(function(){var x=s.lib.BlockCipherMode.extend();x.Encryptor=x.extend({processBlock:function(E,y){var B=this._cipher,D=B.blockSize;A.call(this,E,y,D,B),this._prevBlock=E.slice(y,y+D)}}),x.Decryptor=x.extend({processBlock:function(E,y){var B=this._cipher,D=B.blockSize,r=E.slice(y,y+D);A.call(this,E,y,D,B),this._prevBlock=r}});function A(E,y,B,D){var r,n=this._iv;n?(r=n.slice(0),this._iv=void 0):r=this._prevBlock,D.encryptBlock(r,0);for(var v=0;v<B;v++)E[y+v]^=r[v]}return x})(),s.mode.CFB})});var Qx=T((L0,Zx)=>{(function(s,x,A){typeof L0=="object"?Zx.exports=L0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(L0,function(s){return s.mode.CTR=(function(){var x=s.lib.BlockCipherMode.extend(),A=x.Encryptor=x.extend({processBlock:function(E,y){var B=this._cipher,D=B.blockSize,r=this._iv,n=this._counter;r&&(n=this._counter=r.slice(0),this._iv=void 0);var v=n.slice(0);B.encryptBlock(v,0),n[D-1]=n[D-1]+1|0;for(var t=0;t<D;t++)E[y+t]^=v[t]}});return x.Decryptor=A,x})(),s.mode.CTR})});var $x=T((j0,Yx)=>{(function(s,x,A){typeof j0=="object"?Yx.exports=j0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(j0,function(s){return s.mode.CTRGladman=(function(){var x=s.lib.BlockCipherMode.extend();function A(B){if((B>>24&255)===255){var D=B>>16&255,r=B>>8&255,n=B&255;D===255?(D=0,r===255?(r=0,n===255?n=0:++n):++r):++D,B=0,B+=D<<16,B+=r<<8,B+=n}else B+=1<<24;return B}function E(B){return(B[0]=A(B[0]))===0&&(B[1]=A(B[1])),B}var y=x.Encryptor=x.extend({processBlock:function(B,D){var r=this._cipher,n=r.blockSize,v=this._iv,t=this._counter;v&&(t=this._counter=v.slice(0),this._iv=void 0),E(t);var c=t.slice(0);r.encryptBlock(c,0);for(var a=0;a<n;a++)B[D+a]^=c[a]}});return x.Decryptor=y,x})(),s.mode.CTRGladman})});var Vx=T((T0,Jx)=>{(function(s,x,A){typeof T0=="object"?Jx.exports=T0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(T0,function(s){return s.mode.OFB=(function(){var x=s.lib.BlockCipherMode.extend(),A=x.Encryptor=x.extend({processBlock:function(E,y){var B=this._cipher,D=B.blockSize,r=this._iv,n=this._keystream;r&&(n=this._keystream=r.slice(0),this._iv=void 0),B.encryptBlock(n,0);for(var v=0;v<D;v++)E[y+v]^=n[v]}});return x.Decryptor=A,x})(),s.mode.OFB})});var xe=T((X0,Mx)=>{(function(s,x,A){typeof X0=="object"?Mx.exports=X0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(X0,function(s){return s.mode.ECB=(function(){var x=s.lib.BlockCipherMode.extend();return x.Encryptor=x.extend({processBlock:function(A,E){this._cipher.encryptBlock(A,E)}}),x.Decryptor=x.extend({processBlock:function(A,E){this._cipher.decryptBlock(A,E)}}),x})(),s.mode.ECB})});var re=T((K0,ee)=>{(function(s,x,A){typeof K0=="object"?ee.exports=K0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(K0,function(s){return s.pad.AnsiX923={pad:function(x,A){var E=x.sigBytes,y=A*4,B=y-E%y,D=E+B-1;x.clamp(),x.words[D>>>2]|=B<<24-D%4*8,x.sigBytes+=B},unpad:function(x){var A=x.words[x.sigBytes-1>>>2]&255;x.sigBytes-=A}},s.pad.Ansix923})});var ae=T((I0,te)=>{(function(s,x,A){typeof I0=="object"?te.exports=I0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(I0,function(s){return s.pad.Iso10126={pad:function(x,A){var E=A*4,y=E-x.sigBytes%E;x.concat(s.lib.WordArray.random(y-1)).concat(s.lib.WordArray.create([y<<24],1))},unpad:function(x){var A=x.words[x.sigBytes-1>>>2]&255;x.sigBytes-=A}},s.pad.Iso10126})});var ne=T((N0,ie)=>{(function(s,x,A){typeof N0=="object"?ie.exports=N0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(N0,function(s){return s.pad.Iso97971={pad:function(x,A){x.concat(s.lib.WordArray.create([2147483648],1)),s.pad.ZeroPadding.pad(x,A)},unpad:function(x){s.pad.ZeroPadding.unpad(x),x.sigBytes--}},s.pad.Iso97971})});var oe=T((U0,fe)=>{(function(s,x,A){typeof U0=="object"?fe.exports=U0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(U0,function(s){return s.pad.ZeroPadding={pad:function(x,A){var E=A*4;x.clamp(),x.sigBytes+=E-(x.sigBytes%E||E)},unpad:function(x){for(var A=x.words,E=x.sigBytes-1,E=x.sigBytes-1;E>=0;E--)if(A[E>>>2]>>>24-E%4*8&255){x.sigBytes=E+1;break}}},s.pad.ZeroPadding})});var se=T((O0,ce)=>{(function(s,x,A){typeof O0=="object"?ce.exports=O0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(O0,function(s){return s.pad.NoPadding={pad:function(){},unpad:function(){}},s.pad.NoPadding})});var de=T((G0,ve)=>{(function(s,x,A){typeof G0=="object"?ve.exports=G0=x(X(),U()):typeof define=="function"&&define.amd?define(["./core","./cipher-core"],x):x(s.CryptoJS)})(G0,function(s){return(function(x){var A=s,E=A.lib,y=E.CipherParams,B=A.enc,D=B.Hex,r=A.format,n=r.Hex={stringify:function(v){return v.ciphertext.toString(D)},parse:function(v){var t=D.parse(v);return y.create({ciphertext:t})}}})(),s.format.Hex})});var he=T((Z0,Be)=>{(function(s,x,A){typeof Z0=="object"?Be.exports=Z0=x(X(),x0(),e0(),J(),U()):typeof define=="function"&&define.amd?define(["./core","./enc-base64","./md5","./evpkdf","./cipher-core"],x):x(s.CryptoJS)})(Z0,function(s){return(function(){var x=s,A=x.lib,E=A.BlockCipher,y=x.algo,B=[],D=[],r=[],n=[],v=[],t=[],c=[],a=[],o=[],f=[];(function(){for(var e=[],i=0;i<256;i++)i<128?e[i]=i<<1:e[i]=i<<1^283;for(var u=0,d=0,i=0;i<256;i++){var C=d^d<<1^d<<2^d<<3^d<<4;C=C>>>8^C&255^99,B[u]=C,D[C]=u;var F=e[u],w=e[F],H=e[w],q=e[C]*257^C*16843008;r[u]=q<<24|q>>>8,n[u]=q<<16|q>>>16,v[u]=q<<8|q>>>24,t[u]=q;var q=H*16843009^w*65537^F*257^u*16843008;c[C]=q<<24|q>>>8,a[C]=q<<16|q>>>16,o[C]=q<<8|q>>>24,f[C]=q,u?(u=F^e[e[e[H^F]]],d^=e[e[d]]):u=d=1}})();var h=[0,1,2,4,8,16,32,64,128,27,54],l=y.AES=E.extend({_doReset:function(){var e;if(!(this._nRounds&&this._keyPriorReset===this._key)){for(var i=this._keyPriorReset=this._key,u=i.words,d=i.sigBytes/4,C=this._nRounds=d+6,F=(C+1)*4,w=this._keySchedule=[],H=0;H<F;H++)H<d?w[H]=u[H]:(e=w[H-1],H%d?d>6&&H%d==4&&(e=B[e>>>24]<<24|B[e>>>16&255]<<16|B[e>>>8&255]<<8|B[e&255]):(e=e<<8|e>>>24,e=B[e>>>24]<<24|B[e>>>16&255]<<16|B[e>>>8&255]<<8|B[e&255],e^=h[H/d|0]<<24),w[H]=w[H-d]^e);for(var q=this._invKeySchedule=[],R=0;R<F;R++){var H=F-R;if(R%4)var e=w[H];else var e=w[H-4];R<4||H<=4?q[R]=e:q[R]=c[B[e>>>24]]^a[B[e>>>16&255]]^o[B[e>>>8&255]]^f[B[e&255]]}}},encryptBlock:function(e,i){this._doCryptBlock(e,i,this._keySchedule,r,n,v,t,B)},decryptBlock:function(e,i){var u=e[i+1];e[i+1]=e[i+3],e[i+3]=u,this._doCryptBlock(e,i,this._invKeySchedule,c,a,o,f,D);var u=e[i+1];e[i+1]=e[i+3],e[i+3]=u},_doCryptBlock:function(e,i,u,d,C,F,w,H){for(var q=this._nRounds,R=e[i]^u[0],p=e[i+1]^u[1],S=e[i+2]^u[2],z=e[i+3]^u[3],k=4,P=1;P<q;P++){var W=d[R>>>24]^C[p>>>16&255]^F[S>>>8&255]^w[z&255]^u[k++],L=d[p>>>24]^C[S>>>16&255]^F[z>>>8&255]^w[R&255]^u[k++],K=d[S>>>24]^C[z>>>16&255]^F[R>>>8&255]^w[p&255]^u[k++],_=d[z>>>24]^C[R>>>16&255]^F[p>>>8&255]^w[S&255]^u[k++];R=W,p=L,S=K,z=_}var W=(H[R>>>24]<<24|H[p>>>16&255]<<16|H[S>>>8&255]<<8|H[z&255])^u[k++],L=(H[p>>>24]<<24|H[S>>>16&255]<<16|H[z>>>8&255]<<8|H[R&255])^u[k++],K=(H[S>>>24]<<24|H[z>>>16&255]<<16|H[R>>>8&255]<<8|H[p&255])^u[k++],_=(H[z>>>24]<<24|H[R>>>16&255]<<16|H[p>>>8&255]<<8|H[S&255])^u[k++];e[i]=W,e[i+1]=L,e[i+2]=K,e[i+3]=_},keySize:256/32});x.AES=E._createHelper(l)})(),s.AES})});var ue=T((Q0,le)=>{(function(s,x,A){typeof Q0=="object"?le.exports=Q0=x(X(),x0(),e0(),J(),U()):typeof define=="function"&&define.amd?define(["./core","./enc-base64","./md5","./evpkdf","./cipher-core"],x):x(s.CryptoJS)})(Q0,function(s){return(function(){var x=s,A=x.lib,E=A.WordArray,y=A.BlockCipher,B=x.algo,D=[57,49,41,33,25,17,9,1,58,50,42,34,26,18,10,2,59,51,43,35,27,19,11,3,60,52,44,36,63,55,47,39,31,23,15,7,62,54,46,38,30,22,14,6,61,53,45,37,29,21,13,5,28,20,12,4],r=[14,17,11,24,1,5,3,28,15,6,21,10,23,19,12,4,26,8,16,7,27,20,13,2,41,52,31,37,47,55,30,40,51,45,33,48,44,49,39,56,34,53,46,42,50,36,29,32],n=[1,2,4,6,8,10,12,14,15,17,19,21,23,25,27,28],v=[{0:8421888,268435456:32768,536870912:8421378,805306368:2,1073741824:512,1342177280:8421890,1610612736:8389122,1879048192:8388608,2147483648:514,2415919104:8389120,2684354560:33280,2952790016:8421376,3221225472:32770,3489660928:8388610,3758096384:0,4026531840:33282,134217728:0,402653184:8421890,671088640:33282,939524096:32768,1207959552:8421888,1476395008:512,1744830464:8421378,2013265920:2,2281701376:8389120,2550136832:33280,2818572288:8421376,3087007744:8389122,3355443200:8388610,3623878656:32770,3892314112:514,4160749568:8388608,1:32768,268435457:2,536870913:8421888,805306369:8388608,1073741825:8421378,1342177281:33280,1610612737:512,1879048193:8389122,2147483649:8421890,2415919105:8421376,2684354561:8388610,2952790017:33282,3221225473:514,3489660929:8389120,3758096385:32770,4026531841:0,134217729:8421890,402653185:8421376,671088641:8388608,939524097:512,1207959553:32768,1476395009:8388610,1744830465:2,2013265921:33282,2281701377:32770,2550136833:8389122,2818572289:514,3087007745:8421888,3355443201:8389120,3623878657:0,3892314113:33280,4160749569:8421378},{0:1074282512,16777216:16384,33554432:524288,50331648:1074266128,67108864:1073741840,83886080:1074282496,100663296:1073758208,117440512:16,134217728:540672,150994944:1073758224,167772160:1073741824,184549376:540688,201326592:524304,218103808:0,234881024:16400,251658240:1074266112,8388608:1073758208,25165824:540688,41943040:16,58720256:1073758224,75497472:1074282512,92274688:1073741824,109051904:524288,125829120:1074266128,142606336:524304,159383552:0,176160768:16384,192937984:1074266112,209715200:1073741840,226492416:540672,243269632:1074282496,260046848:16400,268435456:0,285212672:1074266128,301989888:1073758224,318767104:1074282496,335544320:1074266112,352321536:16,369098752:540688,385875968:16384,402653184:16400,419430400:524288,436207616:524304,452984832:1073741840,469762048:540672,486539264:1073758208,503316480:1073741824,520093696:1074282512,276824064:540688,293601280:524288,310378496:1074266112,327155712:16384,343932928:1073758208,360710144:1074282512,377487360:16,394264576:1073741824,411041792:1074282496,427819008:1073741840,444596224:1073758224,461373440:524304,478150656:0,494927872:16400,511705088:1074266128,528482304:540672},{0:260,1048576:0,2097152:67109120,3145728:65796,4194304:65540,5242880:67108868,6291456:67174660,7340032:67174400,8388608:67108864,9437184:67174656,10485760:65792,11534336:67174404,12582912:67109124,13631488:65536,14680064:4,15728640:256,524288:67174656,1572864:67174404,2621440:0,3670016:67109120,4718592:67108868,5767168:65536,6815744:65540,7864320:260,8912896:4,9961472:256,11010048:67174400,12058624:65796,13107200:65792,14155776:67109124,15204352:67174660,16252928:67108864,16777216:67174656,17825792:65540,18874368:65536,19922944:67109120,20971520:256,22020096:67174660,23068672:67108868,24117248:0,25165824:67109124,26214400:67108864,27262976:4,28311552:65792,29360128:67174400,30408704:260,31457280:65796,32505856:67174404,17301504:67108864,18350080:260,19398656:67174656,20447232:0,21495808:65540,22544384:67109120,23592960:256,24641536:67174404,25690112:65536,26738688:67174660,27787264:65796,28835840:67108868,29884416:67109124,30932992:67174400,31981568:4,33030144:65792},{0:2151682048,65536:2147487808,131072:4198464,196608:2151677952,262144:0,327680:4198400,393216:2147483712,458752:4194368,524288:2147483648,589824:4194304,655360:64,720896:2147487744,786432:2151678016,851968:4160,917504:4096,983040:2151682112,32768:2147487808,98304:64,163840:2151678016,229376:2147487744,294912:4198400,360448:2151682112,425984:0,491520:2151677952,557056:4096,622592:2151682048,688128:4194304,753664:4160,819200:2147483648,884736:4194368,950272:4198464,1015808:2147483712,1048576:4194368,1114112:4198400,1179648:2147483712,1245184:0,1310720:4160,1376256:2151678016,1441792:2151682048,1507328:2147487808,1572864:2151682112,1638400:2147483648,1703936:2151677952,1769472:4198464,1835008:2147487744,1900544:4194304,1966080:64,2031616:4096,1081344:2151677952,1146880:2151682112,1212416:0,1277952:4198400,1343488:4194368,1409024:2147483648,1474560:2147487808,1540096:64,1605632:2147483712,1671168:4096,1736704:2147487744,1802240:2151678016,1867776:4160,1933312:2151682048,1998848:4194304,2064384:4198464},{0:128,4096:17039360,8192:262144,12288:536870912,16384:537133184,20480:16777344,24576:553648256,28672:262272,32768:16777216,36864:537133056,40960:536871040,45056:553910400,49152:553910272,53248:0,57344:17039488,61440:553648128,2048:17039488,6144:553648256,10240:128,14336:17039360,18432:262144,22528:537133184,26624:553910272,30720:536870912,34816:537133056,38912:0,43008:553910400,47104:16777344,51200:536871040,55296:553648128,59392:16777216,63488:262272,65536:262144,69632:128,73728:536870912,77824:553648256,81920:16777344,86016:553910272,90112:537133184,94208:16777216,98304:553910400,102400:553648128,106496:17039360,110592:537133056,114688:262272,118784:536871040,122880:0,126976:17039488,67584:553648256,71680:16777216,75776:17039360,79872:537133184,83968:536870912,88064:17039488,92160:128,96256:553910272,100352:262272,104448:553910400,108544:0,112640:553648128,116736:16777344,120832:262144,124928:537133056,129024:536871040},{0:268435464,256:8192,512:270532608,768:270540808,1024:268443648,1280:2097152,1536:2097160,1792:268435456,2048:0,2304:268443656,2560:2105344,2816:8,3072:270532616,3328:2105352,3584:8200,3840:270540800,128:270532608,384:270540808,640:8,896:2097152,1152:2105352,1408:268435464,1664:268443648,1920:8200,2176:2097160,2432:8192,2688:268443656,2944:270532616,3200:0,3456:270540800,3712:2105344,3968:268435456,4096:268443648,4352:270532616,4608:270540808,4864:8200,5120:2097152,5376:268435456,5632:268435464,5888:2105344,6144:2105352,6400:0,6656:8,6912:270532608,7168:8192,7424:268443656,7680:270540800,7936:2097160,4224:8,4480:2105344,4736:2097152,4992:268435464,5248:268443648,5504:8200,5760:270540808,6016:270532608,6272:270540800,6528:270532616,6784:8192,7040:2105352,7296:2097160,7552:0,7808:268435456,8064:268443656},{0:1048576,16:33555457,32:1024,48:1049601,64:34604033,80:0,96:1,112:34603009,128:33555456,144:1048577,160:33554433,176:34604032,192:34603008,208:1025,224:1049600,240:33554432,8:34603009,24:0,40:33555457,56:34604032,72:1048576,88:33554433,104:33554432,120:1025,136:1049601,152:33555456,168:34603008,184:1048577,200:1024,216:34604033,232:1,248:1049600,256:33554432,272:1048576,288:33555457,304:34603009,320:1048577,336:33555456,352:34604032,368:1049601,384:1025,400:34604033,416:1049600,432:1,448:0,464:34603008,480:33554433,496:1024,264:1049600,280:33555457,296:34603009,312:1,328:33554432,344:1048576,360:1025,376:34604032,392:33554433,408:34603008,424:0,440:34604033,456:1049601,472:1024,488:33555456,504:1048577},{0:134219808,1:131072,2:134217728,3:32,4:131104,5:134350880,6:134350848,7:2048,8:134348800,9:134219776,10:133120,11:134348832,12:2080,13:0,14:134217760,15:133152,2147483648:2048,2147483649:134350880,2147483650:134219808,2147483651:134217728,2147483652:134348800,2147483653:133120,2147483654:133152,2147483655:32,2147483656:134217760,2147483657:2080,2147483658:131104,2147483659:134350848,2147483660:0,2147483661:134348832,2147483662:134219776,2147483663:131072,16:133152,17:134350848,18:32,19:2048,20:134219776,21:134217760,22:134348832,23:131072,24:0,25:131104,26:134348800,27:134219808,28:134350880,29:133120,30:2080,31:134217728,2147483664:131072,2147483665:2048,2147483666:134348832,2147483667:133152,2147483668:32,2147483669:134348800,2147483670:134217728,2147483671:134219808,2147483672:134350880,2147483673:134217760,2147483674:134219776,2147483675:0,2147483676:133120,2147483677:2080,2147483678:131104,2147483679:134350848}],t=[4160749569,528482304,33030144,2064384,129024,8064,504,2147483679],c=B.DES=y.extend({_doReset:function(){for(var h=this._key,l=h.words,e=[],i=0;i<56;i++){var u=D[i]-1;e[i]=l[u>>>5]>>>31-u%32&1}for(var d=this._subKeys=[],C=0;C<16;C++){for(var F=d[C]=[],w=n[C],i=0;i<24;i++)F[i/6|0]|=e[(r[i]-1+w)%28]<<31-i%6,F[4+(i/6|0)]|=e[28+(r[i+24]-1+w)%28]<<31-i%6;F[0]=F[0]<<1|F[0]>>>31;for(var i=1;i<7;i++)F[i]=F[i]>>>(i-1)*4+3;F[7]=F[7]<<5|F[7]>>>27}for(var H=this._invSubKeys=[],i=0;i<16;i++)H[i]=d[15-i]},encryptBlock:function(h,l){this._doCryptBlock(h,l,this._subKeys)},decryptBlock:function(h,l){this._doCryptBlock(h,l,this._invSubKeys)},_doCryptBlock:function(h,l,e){this._lBlock=h[l],this._rBlock=h[l+1],a.call(this,4,252645135),a.call(this,16,65535),o.call(this,2,858993459),o.call(this,8,16711935),a.call(this,1,1431655765);for(var i=0;i<16;i++){for(var u=e[i],d=this._lBlock,C=this._rBlock,F=0,w=0;w<8;w++)F|=v[w][((C^u[w])&t[w])>>>0];this._lBlock=C,this._rBlock=d^F}var H=this._lBlock;this._lBlock=this._rBlock,this._rBlock=H,a.call(this,1,1431655765),o.call(this,8,16711935),o.call(this,2,858993459),a.call(this,16,65535),a.call(this,4,252645135),h[l]=this._lBlock,h[l+1]=this._rBlock},keySize:64/32,ivSize:64/32,blockSize:64/32});function a(h,l){var e=(this._lBlock>>>h^this._rBlock)&l;this._rBlock^=e,this._lBlock^=e<<h}function o(h,l){var e=(this._rBlock>>>h^this._lBlock)&l;this._lBlock^=e,this._rBlock^=e<<h}x.DES=y._createHelper(c);var f=B.TripleDES=y.extend({_doReset:function(){var h=this._key,l=h.words;if(l.length!==2&&l.length!==4&&l.length<6)throw new Error("Invalid key length - 3DES requires the key length to be 64, 128, 192 or >192.");var e=l.slice(0,2),i=l.length<4?l.slice(0,2):l.slice(2,4),u=l.length<6?l.slice(0,2):l.slice(4,6);this._des1=c.createEncryptor(E.create(e)),this._des2=c.createEncryptor(E.create(i)),this._des3=c.createEncryptor(E.create(u))},encryptBlock:function(h,l){this._des1.encryptBlock(h,l),this._des2.decryptBlock(h,l),this._des3.encryptBlock(h,l)},decryptBlock:function(h,l){this._des3.decryptBlock(h,l),this._des2.encryptBlock(h,l),this._des1.decryptBlock(h,l)},keySize:192/32,ivSize:64/32,blockSize:64/32});x.TripleDES=y._createHelper(f)})(),s.TripleDES})});var Ee=T((Y0,Ce)=>{(function(s,x,A){typeof Y0=="object"?Ce.exports=Y0=x(X(),x0(),e0(),J(),U()):typeof define=="function"&&define.amd?define(["./core","./enc-base64","./md5","./evpkdf","./cipher-core"],x):x(s.CryptoJS)})(Y0,function(s){return(function(){var x=s,A=x.lib,E=A.StreamCipher,y=x.algo,B=y.RC4=E.extend({_doReset:function(){for(var n=this._key,v=n.words,t=n.sigBytes,c=this._S=[],a=0;a<256;a++)c[a]=a;for(var a=0,o=0;a<256;a++){var f=a%t,h=v[f>>>2]>>>24-f%4*8&255;o=(o+c[a]+h)%256;var l=c[a];c[a]=c[o],c[o]=l}this._i=this._j=0},_doProcessBlock:function(n,v){n[v]^=D.call(this)},keySize:256/32,ivSize:0});function D(){for(var n=this._S,v=this._i,t=this._j,c=0,a=0;a<4;a++){v=(v+1)%256,t=(t+n[v])%256;var o=n[v];n[v]=n[t],n[t]=o,c|=n[(n[v]+n[t])%256]<<24-a*8}return this._i=v,this._j=t,c}x.RC4=E._createHelper(B);var r=y.RC4Drop=B.extend({cfg:B.cfg.extend({drop:192}),_doReset:function(){B._doReset.call(this);for(var n=this.cfg.drop;n>0;n--)D.call(this)}});x.RC4Drop=E._createHelper(r)})(),s.RC4})});var Fe=T(($0,Ae)=>{(function(s,x,A){typeof $0=="object"?Ae.exports=$0=x(X(),x0(),e0(),J(),U()):typeof define=="function"&&define.amd?define(["./core","./enc-base64","./md5","./evpkdf","./cipher-core"],x):x(s.CryptoJS)})($0,function(s){return(function(){var x=s,A=x.lib,E=A.StreamCipher,y=x.algo,B=[],D=[],r=[],n=y.Rabbit=E.extend({_doReset:function(){for(var t=this._key.words,c=this.cfg.iv,a=0;a<4;a++)t[a]=(t[a]<<8|t[a]>>>24)&16711935|(t[a]<<24|t[a]>>>8)&4278255360;var o=this._X=[t[0],t[3]<<16|t[2]>>>16,t[1],t[0]<<16|t[3]>>>16,t[2],t[1]<<16|t[0]>>>16,t[3],t[2]<<16|t[1]>>>16],f=this._C=[t[2]<<16|t[2]>>>16,t[0]&4294901760|t[1]&65535,t[3]<<16|t[3]>>>16,t[1]&4294901760|t[2]&65535,t[0]<<16|t[0]>>>16,t[2]&4294901760|t[3]&65535,t[1]<<16|t[1]>>>16,t[3]&4294901760|t[0]&65535];this._b=0;for(var a=0;a<4;a++)v.call(this);for(var a=0;a<8;a++)f[a]^=o[a+4&7];if(c){var h=c.words,l=h[0],e=h[1],i=(l<<8|l>>>24)&16711935|(l<<24|l>>>8)&4278255360,u=(e<<8|e>>>24)&16711935|(e<<24|e>>>8)&4278255360,d=i>>>16|u&4294901760,C=u<<16|i&65535;f[0]^=i,f[1]^=d,f[2]^=u,f[3]^=C,f[4]^=i,f[5]^=d,f[6]^=u,f[7]^=C;for(var a=0;a<4;a++)v.call(this)}},_doProcessBlock:function(t,c){var a=this._X;v.call(this),B[0]=a[0]^a[5]>>>16^a[3]<<16,B[1]=a[2]^a[7]>>>16^a[5]<<16,B[2]=a[4]^a[1]>>>16^a[7]<<16,B[3]=a[6]^a[3]>>>16^a[1]<<16;for(var o=0;o<4;o++)B[o]=(B[o]<<8|B[o]>>>24)&16711935|(B[o]<<24|B[o]>>>8)&4278255360,t[c+o]^=B[o]},blockSize:128/32,ivSize:64/32});function v(){for(var t=this._X,c=this._C,a=0;a<8;a++)D[a]=c[a];c[0]=c[0]+1295307597+this._b|0,c[1]=c[1]+3545052371+(c[0]>>>0<D[0]>>>0?1:0)|0,c[2]=c[2]+886263092+(c[1]>>>0<D[1]>>>0?1:0)|0,c[3]=c[3]+1295307597+(c[2]>>>0<D[2]>>>0?1:0)|0,c[4]=c[4]+3545052371+(c[3]>>>0<D[3]>>>0?1:0)|0,c[5]=c[5]+886263092+(c[4]>>>0<D[4]>>>0?1:0)|0,c[6]=c[6]+1295307597+(c[5]>>>0<D[5]>>>0?1:0)|0,c[7]=c[7]+3545052371+(c[6]>>>0<D[6]>>>0?1:0)|0,this._b=c[7]>>>0<D[7]>>>0?1:0;for(var a=0;a<8;a++){var o=t[a]+c[a],f=o&65535,h=o>>>16,l=((f*f>>>17)+f*h>>>15)+h*h,e=((o&4294901760)*o|0)+((o&65535)*o|0);r[a]=l^e}t[0]=r[0]+(r[7]<<16|r[7]>>>16)+(r[6]<<16|r[6]>>>16)|0,t[1]=r[1]+(r[0]<<8|r[0]>>>24)+r[7]|0,t[2]=r[2]+(r[1]<<16|r[1]>>>16)+(r[0]<<16|r[0]>>>16)|0,t[3]=r[3]+(r[2]<<8|r[2]>>>24)+r[1]|0,t[4]=r[4]+(r[3]<<16|r[3]>>>16)+(r[2]<<16|r[2]>>>16)|0,t[5]=r[5]+(r[4]<<8|r[4]>>>24)+r[3]|0,t[6]=r[6]+(r[5]<<16|r[5]>>>16)+(r[4]<<16|r[4]>>>16)|0,t[7]=r[7]+(r[6]<<8|r[6]>>>24)+r[5]|0}x.Rabbit=E._createHelper(n)})(),s.Rabbit})});var pe=T((J0,De)=>{(function(s,x,A){typeof J0=="object"?De.exports=J0=x(X(),x0(),e0(),J(),U()):typeof define=="function"&&define.amd?define(["./core","./enc-base64","./md5","./evpkdf","./cipher-core"],x):x(s.CryptoJS)})(J0,function(s){return(function(){var x=s,A=x.lib,E=A.StreamCipher,y=x.algo,B=[],D=[],r=[],n=y.RabbitLegacy=E.extend({_doReset:function(){var t=this._key.words,c=this.cfg.iv,a=this._X=[t[0],t[3]<<16|t[2]>>>16,t[1],t[0]<<16|t[3]>>>16,t[2],t[1]<<16|t[0]>>>16,t[3],t[2]<<16|t[1]>>>16],o=this._C=[t[2]<<16|t[2]>>>16,t[0]&4294901760|t[1]&65535,t[3]<<16|t[3]>>>16,t[1]&4294901760|t[2]&65535,t[0]<<16|t[0]>>>16,t[2]&4294901760|t[3]&65535,t[1]<<16|t[1]>>>16,t[3]&4294901760|t[0]&65535];this._b=0;for(var f=0;f<4;f++)v.call(this);for(var f=0;f<8;f++)o[f]^=a[f+4&7];if(c){var h=c.words,l=h[0],e=h[1],i=(l<<8|l>>>24)&16711935|(l<<24|l>>>8)&4278255360,u=(e<<8|e>>>24)&16711935|(e<<24|e>>>8)&4278255360,d=i>>>16|u&4294901760,C=u<<16|i&65535;o[0]^=i,o[1]^=d,o[2]^=u,o[3]^=C,o[4]^=i,o[5]^=d,o[6]^=u,o[7]^=C;for(var f=0;f<4;f++)v.call(this)}},_doProcessBlock:function(t,c){var a=this._X;v.call(this),B[0]=a[0]^a[5]>>>16^a[3]<<16,B[1]=a[2]^a[7]>>>16^a[5]<<16,B[2]=a[4]^a[1]>>>16^a[7]<<16,B[3]=a[6]^a[3]>>>16^a[1]<<16;for(var o=0;o<4;o++)B[o]=(B[o]<<8|B[o]>>>24)&16711935|(B[o]<<24|B[o]>>>8)&4278255360,t[c+o]^=B[o]},blockSize:128/32,ivSize:64/32});function v(){for(var t=this._X,c=this._C,a=0;a<8;a++)D[a]=c[a];c[0]=c[0]+1295307597+this._b|0,c[1]=c[1]+3545052371+(c[0]>>>0<D[0]>>>0?1:0)|0,c[2]=c[2]+886263092+(c[1]>>>0<D[1]>>>0?1:0)|0,c[3]=c[3]+1295307597+(c[2]>>>0<D[2]>>>0?1:0)|0,c[4]=c[4]+3545052371+(c[3]>>>0<D[3]>>>0?1:0)|0,c[5]=c[5]+886263092+(c[4]>>>0<D[4]>>>0?1:0)|0,c[6]=c[6]+1295307597+(c[5]>>>0<D[5]>>>0?1:0)|0,c[7]=c[7]+3545052371+(c[6]>>>0<D[6]>>>0?1:0)|0,this._b=c[7]>>>0<D[7]>>>0?1:0;for(var a=0;a<8;a++){var o=t[a]+c[a],f=o&65535,h=o>>>16,l=((f*f>>>17)+f*h>>>15)+h*h,e=((o&4294901760)*o|0)+((o&65535)*o|0);r[a]=l^e}t[0]=r[0]+(r[7]<<16|r[7]>>>16)+(r[6]<<16|r[6]>>>16)|0,t[1]=r[1]+(r[0]<<8|r[0]>>>24)+r[7]|0,t[2]=r[2]+(r[1]<<16|r[1]>>>16)+(r[0]<<16|r[0]>>>16)|0,t[3]=r[3]+(r[2]<<8|r[2]>>>24)+r[1]|0,t[4]=r[4]+(r[3]<<16|r[3]>>>16)+(r[2]<<16|r[2]>>>16)|0,t[5]=r[5]+(r[4]<<8|r[4]>>>24)+r[3]|0,t[6]=r[6]+(r[5]<<16|r[5]>>>16)+(r[4]<<16|r[4]>>>16)|0,t[7]=r[7]+(r[6]<<8|r[6]>>>24)+r[5]|0}x.RabbitLegacy=E._createHelper(n)})(),s.RabbitLegacy})});var be=T((V0,_e)=>{(function(s,x,A){typeof V0=="object"?_e.exports=V0=x(X(),x0(),e0(),J(),U()):typeof define=="function"&&define.amd?define(["./core","./enc-base64","./md5","./evpkdf","./cipher-core"],x):x(s.CryptoJS)})(V0,function(s){return(function(){var x=s,A=x.lib,E=A.BlockCipher,y=x.algo;let B=16,D=[608135816,2242054355,320440878,57701188,2752067618,698298832,137296536,3964562569,1160258022,953160567,3193202383,887688300,3232508343,3380367581,1065670069,3041331479,2450970073,2306472731],r=[[3509652390,2564797868,805139163,3491422135,3101798381,1780907670,3128725573,4046225305,614570311,3012652279,134345442,2240740374,1667834072,1901547113,2757295779,4103290238,227898511,1921955416,1904987480,2182433518,2069144605,3260701109,2620446009,720527379,3318853667,677414384,3393288472,3101374703,2390351024,1614419982,1822297739,2954791486,3608508353,3174124327,2024746970,1432378464,3864339955,2857741204,1464375394,1676153920,1439316330,715854006,3033291828,289532110,2706671279,2087905683,3018724369,1668267050,732546397,1947742710,3462151702,2609353502,2950085171,1814351708,2050118529,680887927,999245976,1800124847,3300911131,1713906067,1641548236,4213287313,1216130144,1575780402,4018429277,3917837745,3693486850,3949271944,596196993,3549867205,258830323,2213823033,772490370,2760122372,1774776394,2652871518,566650946,4142492826,1728879713,2882767088,1783734482,3629395816,2517608232,2874225571,1861159788,326777828,3124490320,2130389656,2716951837,967770486,1724537150,2185432712,2364442137,1164943284,2105845187,998989502,3765401048,2244026483,1075463327,1455516326,1322494562,910128902,469688178,1117454909,936433444,3490320968,3675253459,1240580251,122909385,2157517691,634681816,4142456567,3825094682,3061402683,2540495037,79693498,3249098678,1084186820,1583128258,426386531,1761308591,1047286709,322548459,995290223,1845252383,2603652396,3431023940,2942221577,3202600964,3727903485,1712269319,422464435,3234572375,1170764815,3523960633,3117677531,1434042557,442511882,3600875718,1076654713,1738483198,4213154764,2393238008,3677496056,1014306527,4251020053,793779912,2902807211,842905082,4246964064,1395751752,1040244610,2656851899,3396308128,445077038,3742853595,3577915638,679411651,2892444358,2354009459,1767581616,3150600392,3791627101,3102740896,284835224,4246832056,1258075500,768725851,2589189241,3069724005,3532540348,1274779536,3789419226,2764799539,1660621633,3471099624,4011903706,913787905,3497959166,737222580,2514213453,2928710040,3937242737,1804850592,3499020752,2949064160,2386320175,2390070455,2415321851,4061277028,2290661394,2416832540,1336762016,1754252060,3520065937,3014181293,791618072,3188594551,3933548030,2332172193,3852520463,3043980520,413987798,3465142937,3030929376,4245938359,2093235073,3534596313,375366246,2157278981,2479649556,555357303,3870105701,2008414854,3344188149,4221384143,3956125452,2067696032,3594591187,2921233993,2428461,544322398,577241275,1471733935,610547355,4027169054,1432588573,1507829418,2025931657,3646575487,545086370,48609733,2200306550,1653985193,298326376,1316178497,3007786442,2064951626,458293330,2589141269,3591329599,3164325604,727753846,2179363840,146436021,1461446943,4069977195,705550613,3059967265,3887724982,4281599278,3313849956,1404054877,2845806497,146425753,1854211946],[1266315497,3048417604,3681880366,3289982499,290971e4,1235738493,2632868024,2414719590,3970600049,1771706367,1449415276,3266420449,422970021,1963543593,2690192192,3826793022,1062508698,1531092325,1804592342,2583117782,2714934279,4024971509,1294809318,4028980673,1289560198,2221992742,1669523910,35572830,157838143,1052438473,1016535060,1802137761,1753167236,1386275462,3080475397,2857371447,1040679964,2145300060,2390574316,1461121720,2956646967,4031777805,4028374788,33600511,2920084762,1018524850,629373528,3691585981,3515945977,2091462646,2486323059,586499841,988145025,935516892,3367335476,2599673255,2839830854,265290510,3972581182,2759138881,3795373465,1005194799,847297441,406762289,1314163512,1332590856,1866599683,4127851711,750260880,613907577,1450815602,3165620655,3734664991,3650291728,3012275730,3704569646,1427272223,778793252,1343938022,2676280711,2052605720,1946737175,3164576444,3914038668,3967478842,3682934266,1661551462,3294938066,4011595847,840292616,3712170807,616741398,312560963,711312465,1351876610,322626781,1910503582,271666773,2175563734,1594956187,70604529,3617834859,1007753275,1495573769,4069517037,2549218298,2663038764,504708206,2263041392,3941167025,2249088522,1514023603,1998579484,1312622330,694541497,2582060303,2151582166,1382467621,776784248,2618340202,3323268794,2497899128,2784771155,503983604,4076293799,907881277,423175695,432175456,1378068232,4145222326,3954048622,3938656102,3820766613,2793130115,2977904593,26017576,3274890735,3194772133,1700274565,1756076034,4006520079,3677328699,720338349,1533947780,354530856,688349552,3973924725,1637815568,332179504,3949051286,53804574,2852348879,3044236432,1282449977,3583942155,3416972820,4006381244,1617046695,2628476075,3002303598,1686838959,431878346,2686675385,1700445008,1080580658,1009431731,832498133,3223435511,2605976345,2271191193,2516031870,1648197032,4164389018,2548247927,300782431,375919233,238389289,3353747414,2531188641,2019080857,1475708069,455242339,2609103871,448939670,3451063019,1395535956,2413381860,1841049896,1491858159,885456874,4264095073,4001119347,1565136089,3898914787,1108368660,540939232,1173283510,2745871338,3681308437,4207628240,3343053890,4016749493,1699691293,1103962373,3625875870,2256883143,3830138730,1031889488,3479347698,1535977030,4236805024,3251091107,2132092099,1774941330,1199868427,1452454533,157007616,2904115357,342012276,595725824,1480756522,206960106,497939518,591360097,863170706,2375253569,3596610801,1814182875,2094937945,3421402208,1082520231,3463918190,2785509508,435703966,3908032597,1641649973,2842273706,3305899714,1510255612,2148256476,2655287854,3276092548,4258621189,236887753,3681803219,274041037,1734335097,3815195456,3317970021,1899903192,1026095262,4050517792,356393447,2410691914,3873677099,3682840055],[3913112168,2491498743,4132185628,2489919796,1091903735,1979897079,3170134830,3567386728,3557303409,857797738,1136121015,1342202287,507115054,2535736646,337727348,3213592640,1301675037,2528481711,1895095763,1721773893,3216771564,62756741,2142006736,835421444,2531993523,1442658625,3659876326,2882144922,676362277,1392781812,170690266,3921047035,1759253602,3611846912,1745797284,664899054,1329594018,3901205900,3045908486,2062866102,2865634940,3543621612,3464012697,1080764994,553557557,3656615353,3996768171,991055499,499776247,1265440854,648242737,3940784050,980351604,3713745714,1749149687,3396870395,4211799374,3640570775,1161844396,3125318951,1431517754,545492359,4268468663,3499529547,1437099964,2702547544,3433638243,2581715763,2787789398,1060185593,1593081372,2418618748,4260947970,69676912,2159744348,86519011,2512459080,3838209314,1220612927,3339683548,133810670,1090789135,1078426020,1569222167,845107691,3583754449,4072456591,1091646820,628848692,1613405280,3757631651,526609435,236106946,48312990,2942717905,3402727701,1797494240,859738849,992217954,4005476642,2243076622,3870952857,3732016268,765654824,3490871365,2511836413,1685915746,3888969200,1414112111,2273134842,3281911079,4080962846,172450625,2569994100,980381355,4109958455,2819808352,2716589560,2568741196,3681446669,3329971472,1835478071,660984891,3704678404,4045999559,3422617507,3040415634,1762651403,1719377915,3470491036,2693910283,3642056355,3138596744,1364962596,2073328063,1983633131,926494387,3423689081,2150032023,4096667949,1749200295,3328846651,309677260,2016342300,1779581495,3079819751,111262694,1274766160,443224088,298511866,1025883608,3806446537,1145181785,168956806,3641502830,3584813610,1689216846,3666258015,3200248200,1692713982,2646376535,4042768518,1618508792,1610833997,3523052358,4130873264,2001055236,3610705100,2202168115,4028541809,2961195399,1006657119,2006996926,3186142756,1430667929,3210227297,1314452623,4074634658,4101304120,2273951170,1399257539,3367210612,3027628629,1190975929,2062231137,2333990788,2221543033,2438960610,1181637006,548689776,2362791313,3372408396,3104550113,3145860560,296247880,1970579870,3078560182,3769228297,1714227617,3291629107,3898220290,166772364,1251581989,493813264,448347421,195405023,2709975567,677966185,3703036547,1463355134,2715995803,1338867538,1343315457,2802222074,2684532164,233230375,2599980071,2000651841,3277868038,1638401717,4028070440,3237316320,6314154,819756386,300326615,590932579,1405279636,3267499572,3150704214,2428286686,3959192993,3461946742,1862657033,1266418056,963775037,2089974820,2263052895,1917689273,448879540,3550394620,3981727096,150775221,3627908307,1303187396,508620638,2975983352,2726630617,1817252668,1876281319,1457606340,908771278,3720792119,3617206836,2455994898,1729034894,1080033504],[976866871,3556439503,2881648439,1522871579,1555064734,1336096578,3548522304,2579274686,3574697629,3205460757,3593280638,3338716283,3079412587,564236357,2993598910,1781952180,1464380207,3163844217,3332601554,1699332808,1393555694,1183702653,3581086237,1288719814,691649499,2847557200,2895455976,3193889540,2717570544,1781354906,1676643554,2592534050,3230253752,1126444790,2770207658,2633158820,2210423226,2615765581,2414155088,3127139286,673620729,2805611233,1269405062,4015350505,3341807571,4149409754,1057255273,2012875353,2162469141,2276492801,2601117357,993977747,3918593370,2654263191,753973209,36408145,2530585658,25011837,3520020182,2088578344,530523599,2918365339,1524020338,1518925132,3760827505,3759777254,1202760957,3985898139,3906192525,674977740,4174734889,2031300136,2019492241,3983892565,4153806404,3822280332,352677332,2297720250,60907813,90501309,3286998549,1016092578,2535922412,2839152426,457141659,509813237,4120667899,652014361,1966332200,2975202805,55981186,2327461051,676427537,3255491064,2882294119,3433927263,1307055953,942726286,933058658,2468411793,3933900994,4215176142,1361170020,2001714738,2830558078,3274259782,1222529897,1679025792,2729314320,3714953764,1770335741,151462246,3013232138,1682292957,1483529935,471910574,1539241949,458788160,3436315007,1807016891,3718408830,978976581,1043663428,3165965781,1927990952,4200891579,2372276910,3208408903,3533431907,1412390302,2931980059,4132332400,1947078029,3881505623,4168226417,2941484381,1077988104,1320477388,886195818,18198404,3786409e3,2509781533,112762804,3463356488,1866414978,891333506,18488651,661792760,1628790961,3885187036,3141171499,876946877,2693282273,1372485963,791857591,2686433993,3759982718,3167212022,3472953795,2716379847,445679433,3561995674,3504004811,3574258232,54117162,3331405415,2381918588,3769707343,4154350007,1140177722,4074052095,668550556,3214352940,367459370,261225585,2610173221,4209349473,3468074219,3265815641,314222801,3066103646,3808782860,282218597,3406013506,3773591054,379116347,1285071038,846784868,2669647154,3771962079,3550491691,2305946142,453669953,1268987020,3317592352,3279303384,3744833421,2610507566,3859509063,266596637,3847019092,517658769,3462560207,3443424879,370717030,4247526661,2224018117,4143653529,4112773975,2788324899,2477274417,1456262402,2901442914,1517677493,1846949527,2295493580,3734397586,2176403920,1280348187,1908823572,3871786941,846861322,1172426758,3287448474,3383383037,1655181056,3139813346,901632758,1897031941,2986607138,3066810236,3447102507,1393639104,373351379,950779232,625454576,3124240540,4148612726,2007998917,544563296,2244738638,2330496472,2058025392,1291430526,424198748,50039436,29584100,3605783033,2429876329,2791104160,1057563949,3255363231,3075367218,3463963227,1469046755,985887462]];var n={pbox:[],sbox:[]};function v(f,h){let l=h>>24&255,e=h>>16&255,i=h>>8&255,u=h&255,d=f.sbox[0][l]+f.sbox[1][e];return d=d^f.sbox[2][i],d=d+f.sbox[3][u],d}function t(f,h,l){let e=h,i=l,u;for(let d=0;d<B;++d)e=e^f.pbox[d],i=v(f,e)^i,u=e,e=i,i=u;return u=e,e=i,i=u,i=i^f.pbox[B],e=e^f.pbox[B+1],{left:e,right:i}}function c(f,h,l){let e=h,i=l,u;for(let d=B+1;d>1;--d)e=e^f.pbox[d],i=v(f,e)^i,u=e,e=i,i=u;return u=e,e=i,i=u,i=i^f.pbox[1],e=e^f.pbox[0],{left:e,right:i}}function a(f,h,l){for(let C=0;C<4;C++){f.sbox[C]=[];for(let F=0;F<256;F++)f.sbox[C][F]=r[C][F]}let e=0;for(let C=0;C<B+2;C++)f.pbox[C]=D[C]^h[e],e++,e>=l&&(e=0);let i=0,u=0,d=0;for(let C=0;C<B+2;C+=2)d=t(f,i,u),i=d.left,u=d.right,f.pbox[C]=i,f.pbox[C+1]=u;for(let C=0;C<4;C++)for(let F=0;F<256;F+=2)d=t(f,i,u),i=d.left,u=d.right,f.sbox[C][F]=i,f.sbox[C][F+1]=u;return!0}var o=y.Blowfish=E.extend({_doReset:function(){if(this._keyPriorReset!==this._key){var f=this._keyPriorReset=this._key,h=f.words,l=f.sigBytes/4;a(n,h,l)}},encryptBlock:function(f,h){var l=t(n,f[h],f[h+1]);f[h]=l.left,f[h+1]=l.right},decryptBlock:function(f,h){var l=c(n,f[h],f[h+1]);f[h]=l.left,f[h+1]=l.right},blockSize:64/32,keySize:128/32,ivSize:64/32});x.Blowfish=E._createHelper(o)})(),s.Blowfish})});var ge=T((M0,ye)=>{(function(s,x,A){typeof M0=="object"?ye.exports=M0=x(X(),d0(),px(),bx(),x0(),kx(),e0(),rx(),y0(),qx(),tx(),Wx(),Lx(),Tx(),q0(),Ix(),J(),U(),Gx(),Qx(),$x(),Vx(),xe(),re(),ae(),ne(),oe(),se(),de(),he(),ue(),Ee(),Fe(),pe(),be()):typeof define=="function"&&define.amd?define(["./core","./x64-core","./lib-typedarrays","./enc-utf16","./enc-base64","./enc-base64url","./md5","./sha1","./sha256","./sha224","./sha512","./sha384","./sha3","./ripemd160","./hmac","./pbkdf2","./evpkdf","./cipher-core","./mode-cfb","./mode-ctr","./mode-ctr-gladman","./mode-ofb","./mode-ecb","./pad-ansix923","./pad-iso10126","./pad-iso97971","./pad-zeropadding","./pad-nopadding","./format-hex","./aes","./tripledes","./rc4","./rabbit","./rabbit-legacy","./blowfish"],x):s.CryptoJS=x(s.CryptoJS)})(M0,function(s){return s})});var Ke=T((Ge,ke)=>{var ax=ge();typeof window<"u"&&(window.CryptoJS=ax);typeof globalThis<"u"&&(globalThis.CryptoJS=ax);ke.exports=ax});Ke();})();
+/*! Bundled license information:
+
+crypto-js/ripemd160.js:
+  (** @preserve
+  	(c) 2012 by Cédric Mesnil. All rights reserved.
+  
+  	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+  
+  	    - Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+  	    - Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+  
+  	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  	*)
+
+crypto-js/mode-ctr-gladman.js:
+  (** @preserve
+   * Counter block mode compatible with  Dr Brian Gladman fileenc.c
+   * derived from CryptoJS.mode.CTR
+   * Jan Hruby jhruby.web@gmail.com
+   *)
+*/
+
+  </script>
+  <style>
+    /* =========================================================
+       THEME VARIABLES (Light Mode is Default, Dark Mode on .dark)
+       Palette:
+       Abyss: #000f22
+       Midnight: #1b3554 / #1C2B48
+       Slate: #3f6593
+       Steel: #5b86b6
+       Cool Cerulean: #8EB1D1 / #80aad3
+       Baby Blue Eyes: #A7C7E7
+       Ice Soft Blue: #c0e6fd
+       Light Blue Grey: #C4D8E5
+       Platinum: #E8ECEF
+       ========================================================= */
+
+    :root {
+      /* LIGHT MODE (DEFAULT) */
+      --bg-page-gradient: radial-gradient(circle at 50% 0%, #edf5fc 0%, #f4f8fc 65%, #e8f1fa 100%);
+      --card-bg: #ffffff;
+      --card-border: #C4D8E5;
+      --card-hover-border: #80aad3;
+      --card-shadow: 0 10px 25px -4px rgba(28, 43, 72, 0.07), 0 4px 6px -2px rgba(28, 43, 72, 0.04);
+      --inner-bg: #f7faff;
+      --inner-border: #C4D8E5;
+      --text-main: #000f22;
+      --text-title: #1C2B48;
+      --text-muted: #3f6593;
+      --text-sub: #5b86b6;
+      --badge-bg: #eaf3fb;
+      --badge-border: #C4D8E5;
+      --badge-text: #1b3554;
+      --button-sec-bg: #edf5fc;
+      --button-sec-border: #C4D8E5;
+      --button-sec-text: #1C2B48;
+      --button-sec-hover: #dbeaf7;
+      --primary-btn-bg: linear-gradient(135deg, #1C2B48 0%, #3f6593 100%);
+      --primary-btn-text: #ffffff;
+      --primary-btn-shadow: 0 8px 20px rgba(28, 43, 72, 0.22);
+      --accent-tab-active: #1C2B48;
+      --accent-tab-active-border: #3f6593;
+      --accent-tab-inactive: #5b86b6;
+      --accent-tab-inactive-hover: #1C2B48;
+      --accent-color: #3f6593;
+      --scrollbar-track: #edf5fc;
+      --scrollbar-thumb: #A7C7E7;
+      --scrollbar-thumb-hover: #80aad3;
+      --selection-bg: #c0e6fd;
+      --selection-text: #000f22;
+      --header-border: #C4D8E5;
+      --input-placeholder: #8EB1D1;
+      --quick-copy-bg: linear-gradient(135deg, #1C2B48 0%, #3f6593 100%);
+      --quick-copy-text: #ffffff;
+      --video-bg: #0d1e33;
+    }
+
+    html.dark {
+      /* DARK MODE (Midnight & Cool Cerulean) */
+      --bg-page-gradient: radial-gradient(circle at 50% 0%, #0d1e33 0%, #000f22 80%);
+      --card-bg: rgba(11, 23, 40, 0.96);
+      --card-border: #1b3554;
+      --card-hover-border: #3f6593;
+      --card-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+      --inner-bg: #000f22;
+      --inner-border: #1b3554;
+      --text-main: #E8ECEF;
+      --text-title: #E8ECEF;
+      --text-muted: #C4D8E5;
+      --text-sub: #8EB1D1;
+      --badge-bg: #0d1e33;
+      --badge-border: #1b3554;
+      --badge-text: #C4D8E5;
+      --button-sec-bg: #1b3554;
+      --button-sec-border: #3f6593;
+      --button-sec-text: #E8ECEF;
+      --button-sec-hover: #3f6593;
+      --primary-btn-bg: linear-gradient(135deg, #8EB1D1 0%, #80aad3 50%, #c0e6fd 100%);
+      --primary-btn-text: #000f22;
+      --primary-btn-shadow: 0 8px 25px rgba(128, 170, 211, 0.35);
+      --accent-tab-active: #c0e6fd;
+      --accent-tab-active-border: #80aad3;
+      --accent-tab-inactive: #8EB1D1;
+      --accent-tab-inactive-hover: #E8ECEF;
+      --accent-color: #80aad3;
+      --scrollbar-track: #000f22;
+      --scrollbar-thumb: #3f6593;
+      --scrollbar-thumb-hover: #5b86b6;
+      --selection-bg: #80aad3;
+      --selection-text: #000f22;
+      --header-border: rgba(27, 53, 84, 0.8);
+      --input-placeholder: #5b86b6;
+      --quick-copy-bg: linear-gradient(135deg, #80aad3 0%, #c0e6fd 100%);
+      --quick-copy-text: #000f22;
+      --video-bg: #000f22;
+    }
+
+    body {
+      background: var(--bg-page-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .theme-card {
+      background: var(--card-bg);
+      border-color: var(--card-border);
+      box-shadow: var(--card-shadow);
+      transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .theme-card:hover {
+      border-color: var(--card-hover-border);
+    }
+
+    .theme-inner {
+      background: var(--inner-bg);
+      border-color: var(--inner-border);
+      color: var(--text-main);
+      transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .theme-title {
+      color: var(--text-title);
+      transition: color 0.3s ease;
+    }
+
+    .theme-sub {
+      color: var(--text-sub);
+      transition: color 0.3s ease;
+    }
+
+    .theme-muted {
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+    }
+
+    .theme-badge {
+      background: var(--badge-bg);
+      border-color: var(--badge-border);
+      color: var(--badge-text);
+      transition: all 0.3s ease;
+    }
+
+    .theme-btn-sec {
+      background: var(--button-sec-bg);
+      border-color: var(--button-sec-border);
+      color: var(--button-sec-text);
+      transition: all 0.2s ease;
+    }
+    .theme-btn-sec:hover {
+      background: var(--button-sec-hover);
+    }
+
+    .theme-btn-primary {
+      background: var(--primary-btn-bg);
+      color: var(--primary-btn-text);
+      box-shadow: var(--primary-btn-shadow);
+      transition: all 0.25s ease;
+    }
+
+    .theme-btn-quick-copy {
+      background: var(--quick-copy-bg);
+      color: var(--quick-copy-text);
+      transition: all 0.25s ease;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+
+    ::selection {
+      background: var(--selection-bg);
+      color: var(--selection-text);
+    }
+
+    /* Tabs */
+    .tab-btn {
+      border-bottom: 2px solid transparent;
+      color: var(--accent-tab-inactive);
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      color: var(--accent-tab-inactive-hover);
+    }
+    .tab-btn.active {
+      border-bottom-color: var(--accent-tab-active-border);
+      color: var(--accent-tab-active);
+    }
+  </style>
+</head>
+<body class="antialiased font-sans">
+  <div class="max-w-[1520px] mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    
+    <!-- Top Navigation / Header -->
+    <header class="flex items-center justify-between gap-4 pb-5 mb-6 border-b" style="border-color: var(--header-border);">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg text-[#000f22] font-black text-xl flex-shrink-0"
+             style="background: linear-gradient(135deg, #c0e6fd 0%, #80aad3 50%, #5b86b6 100%); box-shadow: 0 10px 25px -5px rgba(128, 170, 211, 0.35);">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-black tracking-tight theme-title">
+              视频文案提取器
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Header Right: Platform Pills & Theme Toggle -->
+      <div class="flex items-center gap-3">
+        <!-- Platform Support Pills -->
+        <div class="hidden xl:flex items-center gap-1.5 text-xs">
+          <span class="px-2.5 py-1 rounded-lg theme-badge border flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#3f6593]"></span> 抖音
+          </span>
+          <span class="px-2.5 py-1 rounded-lg theme-badge border flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#80aad3]"></span> TikTok
+          </span>
+          <span class="px-2.5 py-1 rounded-lg theme-badge border flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#5b86b6]"></span> 小红书
+          </span>
+          <span class="px-2.5 py-1 rounded-lg theme-badge border flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#8EB1D1]"></span> B站
+          </span>
+        </div>
+
+        <!-- Light / Dark Mode Toggle Button (Icon Only) -->
+        <button id="themeToggleBtn" title="切换浅色 / 深色模式" aria-label="切换浅色 / 深色模式"
+                class="theme-btn-sec w-10 h-10 rounded-2xl border flex items-center justify-center shadow-sm cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200">
+          <!-- Sun Icon (for Light Mode) -->
+          <svg id="themeIconSun" class="w-5 h-5 text-[#1C2B48] transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <!-- Moon Icon (for Dark Mode) -->
+          <svg id="themeIconMoon" class="w-5 h-5 text-[#c0e6fd] hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Two-Column Split Layout -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- ==========================================
+           LEFT COLUMN (5 of 12 cols): 视频链接或分享文本
+           ========================================== -->
+      <div class="lg:col-span-5 space-y-5">
+        
+        <!-- Input Card -->
+        <div id="inputCard" class="theme-card relative rounded-3xl border p-5 sm:p-6 backdrop-blur-xl">
+          
+          <!-- Input Top Actions -->
+          <div class="flex items-center justify-between mb-3 text-sm">
+            <label for="urlInput" class="font-bold theme-title flex items-center gap-2">
+              <svg class="w-4 h-4 text-[#5b86b6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              视频链接或分享文本
+            </label>
+            <div class="flex items-center gap-2">
+              <button id="btnPaste" class="theme-btn-sec text-xs px-2.5 py-1 rounded-md border font-medium">
+                📋 粘贴链接
+              </button>
+              <button id="btnSample" class="theme-btn-sec text-xs px-2.5 py-1 rounded-md border font-medium">
+                💡 填入示例
+              </button>
+              <button id="btnClear" class="theme-btn-sec text-xs px-2 py-1 rounded-md border font-medium">
+                清空
+              </button>
+            </div>
+          </div>
+
+          <!-- Textarea -->
+          <div class="relative">
+            <textarea
+              id="urlInput"
+              rows="4"
+              placeholder="请在此粘贴视频分享链接（直接粘贴整段App分享文案即可，例如：3.58 复制打开抖音... https://v.douyin.com/xxx/ ...）"
+              class="theme-inner w-full rounded-2xl border px-4 py-3.5 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#80aad3]/40 focus:border-[#80aad3] transition duration-200 resize-none font-mono"
+              style="placeholder-color: var(--input-placeholder);"
+            ></textarea>
+          </div>
+
+          <!-- Options & Submit Bar -->
+          <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+            
+            <!-- Target Language Select -->
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5 text-xs theme-muted whitespace-nowrap">
+                <svg class="w-3.5 h-3.5 text-[#5b86b6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                </svg>
+                <span>语言:</span>
+              </div>
+              <select
+                id="languageSelect"
+                class="theme-inner text-xs rounded-xl px-2.5 py-2 border focus:outline-none focus:ring-2 focus:ring-[#80aad3] transition"
+              >
+                <option value="auto">自动识别 (原文)</option>
+                <option value="zh-CN">简体中文</option>
+                <option value="zh-TW">繁体中文</option>
+                <option value="en">English</option>
+                <option value="ja">日语</option>
+                <option value="ko">韩语</option>
+                <option value="fr">法语</option>
+                <option value="de">德语</option>
+                <option value="es">西班牙语</option>
+                <option value="ru">俄语</option>
+              </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              id="btnExtract"
+              class="theme-btn-primary px-5 py-2.5 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <svg id="btnIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <svg id="btnSpinner" class="w-4 h-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span id="btnText">一键提取视频文案</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Live Status / Progress Bar (Hidden when idle) -->
+        <div id="statusCard" class="theme-card hidden rounded-2xl border p-4 transition-all">
+          <div class="flex items-center justify-between text-xs mb-2">
+            <div class="flex items-center gap-2 theme-title font-medium">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#80aad3] opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#5b86b6]"></span>
+              </span>
+              <span id="statusMessage">正在初始化快速通道...</span>
+            </div>
+            <span id="statusStep" class="theme-sub text-xs">处理中...</span>
+          </div>
+          <div class="w-full theme-inner rounded-full h-2 overflow-hidden border">
+            <div id="progressBar" class="h-2 rounded-full transition-all duration-300 w-1/4"
+                 style="background: linear-gradient(90deg, #3f6593 0%, #80aad3 50%, #c0e6fd 100%);"></div>
+          </div>
+        </div>
+
+        <!-- Video Meta & Fast Actions Card (Shown when extracted) -->
+        <div id="videoMetaCard" class="theme-card rounded-3xl border p-5 space-y-4">
+          <div class="flex items-start gap-3.5">
+            <img id="resCoverThumb" src="" alt="封面" class="theme-inner w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border flex-shrink-0 shadow-md">
+            <div class="space-y-1 min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span id="resPlatformBadge" class="text-[11px] px-2 py-0.5 rounded-md theme-badge border font-semibold uppercase">
+                  Douyin
+                </span>
+                <span id="resDurationBadge" class="text-[11px] px-2 py-0.5 rounded-md theme-badge border">
+                  ⏱️ 08:13
+                </span>
+                <span id="resWordsBadge" class="text-[11px] px-2 py-0.5 rounded-md theme-badge border">
+                  ✍️ 2690 字
+                </span>
+              </div>
+              <h2 id="resTitle" class="text-sm font-bold theme-title line-clamp-2 leading-snug">
+                客户问“你们和某某家有什么区别”？ 3步回应，把比较转化为信任！
+              </h2>
+              <p id="resDescSnippet" class="text-xs theme-sub line-clamp-1">
+                知禾有术的作品 · 抖音爆款销售话术解析
+              </p>
+            </div>
+          </div>
+
+          <!-- Fast Action Buttons -->
+          <div class="flex items-center gap-2 pt-2 border-t" style="border-color: var(--card-border);">
+            <button id="btnQuickCopy" class="theme-btn-quick-copy flex-1 py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              复制全文
+            </button>
+            <button id="btnNewExtract" class="theme-btn-sec flex-1 py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer">
+              <span>🔄</span> 提取下一个
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Tips Mini Card -->
+        <div class="theme-card rounded-2xl border p-4 space-y-2 text-xs">
+          <div class="flex items-center gap-2 font-bold theme-title">
+            <span>💡</span> 使用小提示
+          </div>
+          <p class="theme-sub leading-relaxed">
+            支持直接粘贴 App 完整分享文案，系统自动过滤无关字符并提取视频逐字稿。
+          </p>
+        </div>
+
+      </div>
+
+      <!-- ==========================================
+           RIGHT COLUMN (7 of 12 cols): 视频逐字文案 & 多标签结果展示
+           ========================================== -->
+      <div class="lg:col-span-7 space-y-4">
+        
+        <!-- Right Main Results Container -->
+        <div id="resultContainer" class="theme-card rounded-3xl border p-5 sm:p-6 shadow-xl space-y-4">
+          
+          <!-- Tabs Bar (Full Width, No Horizontal Scrollbar) -->
+          <div class="flex items-center gap-1 sm:gap-2 pb-2 border-b" style="border-color: var(--card-border);">
+            <button class="tab-btn active px-3.5 py-2 text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap cursor-pointer" data-target="tabTranscript">
+              📝 逐字稿
+            </button>
+            <button class="tab-btn px-3.5 py-2 text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap cursor-pointer" data-target="tabMetadata">
+              📌 标题与描述
+            </button>
+            <button class="tab-btn px-3.5 py-2 text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap cursor-pointer" data-target="tabMedia">
+              🎬 媒体素材
+            </button>
+            <button class="tab-btn px-3.5 py-2 text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap cursor-pointer" data-target="tabAIStudio">
+              ✨ AI 创作工坊
+            </button>
+          </div>
+
+          <!-- TAB 1: 视频逐字文案 -->
+          <div id="tabTranscript" class="tab-content space-y-3">
+            <!-- Sub-Toolbar: Title + Badge on left, Export Buttons on right in single neat row -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm sm:text-base font-bold theme-title flex items-center gap-1.5">
+                  <span>视频逐字文案</span>
+                </h3>
+                <span id="transLangLabel" class="text-xs px-2.5 py-0.5 rounded-full theme-badge border font-normal">
+                  原文 (2690字)
+                </span>
+              </div>
+
+              <!-- Export Buttons Toolbar -->
+              <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
+                <button id="btnCopyText" class="theme-btn-sec px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition">
+                  📋 复制全文
+                </button>
+                <button id="btnExportTxt" class="theme-btn-sec px-2.5 py-1.5 rounded-lg border text-xs font-medium flex items-center gap-1 cursor-pointer hover:scale-105 active:scale-95 transition">
+                  📄 TXT
+                </button>
+                <button id="btnExportMd" class="theme-btn-sec px-2.5 py-1.5 rounded-lg border text-xs font-medium flex items-center gap-1 cursor-pointer hover:scale-105 active:scale-95 transition">
+                  📝 Markdown
+                </button>
+                <button id="btnExportSrt" class="theme-btn-sec px-2.5 py-1.5 rounded-lg border text-xs font-medium flex items-center gap-1 cursor-pointer hover:scale-105 active:scale-95 transition">
+                  ⏱️ SRT 字幕
+                </button>
+              </div>
+            </div>
+
+            <!-- Transcript Content Box (Internal Scrollbar) -->
+            <div class="relative">
+              <div id="transcriptBox" class="theme-inner w-full rounded-2xl border p-4 sm:p-5 text-sm sm:text-base leading-relaxed whitespace-pre-wrap h-[500px] overflow-y-auto font-sans selection:bg-[#c0e6fd] selection:text-[#000f22]">
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: 标题与描述 -->
+          <div id="tabMetadata" class="tab-content hidden space-y-4 h-[560px] overflow-y-auto pr-1">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold uppercase tracking-wider theme-muted">视频标题</label>
+                <button id="btnCopyTitle" class="text-xs text-[#5b86b6] hover:underline cursor-pointer">复制标题</button>
+              </div>
+              <div id="metaTitle" class="theme-inner rounded-xl border p-3 text-sm select-all">
+                -
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold uppercase tracking-wider theme-muted">视频描述与标签</label>
+                <button id="btnCopyDesc" class="text-xs text-[#5b86b6] hover:underline cursor-pointer">复制描述</button>
+              </div>
+              <div id="metaDesc" class="theme-inner rounded-xl border p-3 text-sm whitespace-pre-wrap select-all">
+                -
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div class="theme-inner rounded-xl border p-3">
+                <div class="text-xs theme-sub">发布平台</div>
+                <div id="metaPlatform" class="text-sm font-semibold theme-title mt-1 uppercase">-</div>
+              </div>
+              <div class="theme-inner rounded-xl border p-3">
+                <div class="text-xs theme-sub">视频时长</div>
+                <div id="metaDuration" class="text-sm font-semibold theme-title mt-1">-</div>
+              </div>
+              <div class="theme-inner rounded-xl border p-3">
+                <div class="text-xs theme-sub">原作品网址</div>
+                <a id="metaWorkUrl" href="#" target="_blank" class="text-sm font-medium text-[#5b86b6] hover:underline truncate block mt-1">查看原网页</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: 媒体素材下载 -->
+          <div id="tabMedia" class="tab-content hidden space-y-4 h-[560px] overflow-y-auto pr-1">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-bold theme-title flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#3f6593]"></span>
+                  无水印视频
+                </h4>
+                <a id="btnDownloadVideo" href="#" target="_blank" download="video.mp4" class="theme-btn-primary text-xs px-3 py-1.5 rounded-lg font-bold">
+                  ⬇️ 下载视频 (MP4)
+                </a>
+              </div>
+              <div class="relative rounded-2xl overflow-hidden border aspect-video flex items-center justify-center max-h-60" style="background: var(--video-bg); border-color: var(--inner-border);">
+                <video id="mediaVideo" controls class="w-full h-full object-contain" poster=""></video>
+                <div id="noVideoNotice" class="hidden text-xs theme-sub">此视频直链需跳转下载</div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-sm font-bold theme-title flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#5b86b6]"></span>
+                    提取音频 (MP3)
+                  </h4>
+                  <a id="btnDownloadAudio" href="#" target="_blank" download="audio.mp3" class="theme-btn-sec text-xs px-2.5 py-1 rounded-lg border font-bold">
+                    🎵 下载
+                  </a>
+                </div>
+                <div class="theme-inner rounded-xl border p-3">
+                  <audio id="mediaAudio" controls class="w-full"></audio>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-sm font-bold theme-title flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#80aad3]"></span>
+                    视频封面图
+                  </h4>
+                  <a id="btnDownloadCover" href="#" target="_blank" download="cover.jpg" class="theme-btn-sec text-xs px-2.5 py-1 rounded-lg border font-medium">
+                    🖼️ 下载
+                  </a>
+                </div>
+                <div class="theme-inner rounded-xl border p-2 flex items-center justify-center max-h-32 overflow-hidden">
+                  <img id="mediaCover" src="" alt="视频封面" class="max-h-28 rounded-lg object-contain">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: AI 爆款创作工坊 -->
+          <div id="tabAIStudio" class="tab-content hidden space-y-4 h-[560px] overflow-y-auto pr-1">
+            <div class="theme-inner rounded-2xl border p-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-bold theme-title flex items-center gap-2">
+                  ⚡ 爆款逻辑结构拆解 (Hook - Story - Value - CTA)
+                </h4>
+                <button onclick="copyElementText('aiStructureBox')" class="text-xs theme-sub hover:underline cursor-pointer">复制拆解</button>
+              </div>
+              <div id="aiStructureBox" class="theme-card text-xs sm:text-sm leading-relaxed whitespace-pre-line space-y-2 p-3.5 rounded-xl border">
+              </div>
+            </div>
+
+            <div class="theme-inner rounded-2xl border p-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-bold theme-title flex items-center gap-2">
+                  🎯 爆款黄金前 3 秒 Hook
+                </h4>
+                <button onclick="copyElementText('aiHooksBox')" class="text-xs theme-sub hover:underline cursor-pointer">复制 Hooks</button>
+              </div>
+              <div id="aiHooksBox" class="grid grid-cols-1 gap-2.5 text-xs sm:text-sm">
+              </div>
+            </div>
+
+            <div class="theme-inner rounded-2xl border p-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-bold theme-title flex items-center gap-2">
+                  ✍️ 同款爆款脚本仿写
+                </h4>
+                <button onclick="copyElementText('aiRewriteBox')" class="text-xs theme-sub hover:underline cursor-pointer">复制仿写脚本</button>
+              </div>
+              <div id="aiRewriteBox" class="theme-card text-xs sm:text-sm leading-relaxed whitespace-pre-wrap p-3.5 rounded-xl border">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Empty State Container (Displayed when user resets / no video yet) -->
+        <div id="emptyState" class="theme-card hidden rounded-3xl border p-12 text-center space-y-4 shadow-xl">
+          <div class="w-16 h-16 rounded-2xl theme-badge border flex items-center justify-center mx-auto text-2xl">
+            📝
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold theme-title">等待提取视频文案</h3>
+            <p class="text-xs sm:text-sm theme-sub max-w-md mx-auto leading-relaxed">
+              在左侧输入框粘贴抖音或短视频分享文本，点击“一键提取视频文案”，文案逐字稿将在此实时呈现。
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-10 text-center text-xs theme-sub py-4 border-t" style="border-color: var(--header-border);">
+      <p>视频文案提取器 · 双栏免滚动工作流</p>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="theme-card rounded-2xl border px-4 py-3 shadow-2xl text-xs sm:text-sm flex items-center gap-2">
+      <span id="toastIcon">✅</span>
+      <span id="toastMsg" class="font-medium">操作成功</span>
+    </div>
+  </div>
+
+  <script>
+    // --- Preloaded User Task ---
+    const PRELOADED_TASK = {"title":"客户问“你们和某某家有什么区别”？ 3步回应，把比较转化为信任！","content":"客户问“你们和某某家有什么区别”？ 3步回应，把比... 复制打开抖音，看看【知禾有术的作品】","textContent":"客户一问你们和某某家有什么区别，很多销售第一句话就把自己带进了比价，谈单谈到一半，客户突然来一句你们家和某某家比有什么区别，大部分销售当场就紧张了，然后掉进两种本能反应里：第一种贬低对手，他们家便宜是便宜，但质量不行；第二种慌忙自夸，我们质量好，服务好，口碑好，两种都错。这两种反应确实太常见了，大部分销售都是本能的选一个。今天先给你核心判断，再给三步回应法。\n\n核心判断是：客户问区别，不是让你评价对手，是在向你要一个选你的理由。这三步是接住、反问、只讲一条，不管你卖设备、软件，还是车子、房子、装修，全部通用。\n\n先说为什么那两种本能反应会丢单。好，先说贬低对手为什么不行？你说竞争对手不行的那一刻，客户心里想的不是原来那家不行，而是你是不是怕了？你贬低对手的样子，在客户眼里就是心虚，这是第一个问题，姿态输了。更麻烦的是第二个问题，客户可能已经去那家看过，甚至有朋友在用那家的产品。你贬低的不是对手，是他的眼光。你等于当着客户的面告诉他你选错了。这种情况下，客户就算心里认同你，嘴上也不会承认，因为承认就意味着承认自己之前判断失误。确实，很多销售没意识到贬低对手其实是在否定客户的选择。\n\n再说说第二种，慌忙罗列优点为什么也不行？区别这道题少说有几十条可以讲，产品参数、价格、交期、售后、案例、团队、资质，每一项都能展开。但客户在乎的可能就一两条，你噼里啪啦讲十条、九条他不关心，真正在乎的那条反而被淹没了。讲的越多，他越觉得都差不多，因为在你罗列的过程中，他没办法判断哪些是真优势，哪些是套话。最后脑子里就一个印象，这家跟别人没什么不一样。对，信息太多了，反而记不住重点。\n\n好，两种坑都讲清楚了。上三步回应法：\n\n第一步：接住，先给这个问题定个调。原话可以照抄：“您这个问题问的特别好，说明您是认真做过功课的。这两家确实都有不少人选，各有各的做法。”这句话一出，三个作用同时达成：第一，夸了客户的认真，你不是随便问问，你是认真比较过了，我尊重你的功课；第二，承认了对手的存在，我没回避，大大方方说这两家都有人选，我不心虚；第三，展示了自己的底气，我不怕比，甚至愿意帮你分析。这个开场确实很稳，不慌不忙，先把气场立住了。能大大方方谈论对手的销售，客户默认你不怕比，这个印象比接下来讲什么都重要。很多销售一听到竞争对手名字就变脸，语气开始急，语速开始快，客户马上就捕捉到了你的紧张。所以第一步的核心不是话术技巧，是心态。我允许你比较，我甚至欢迎比较。\n\n第二步：反问，把比较的尺子拿回来。别急着答，先问：“主要看您这边最看重什么是预算、交付速度还是后期的服务？您几家看下来，比较在意的是哪块？”这一步是三步里最值钱的。为什么？因为区别这道题，答案取决于客户用什么尺子量。他在乎交付，你讲品质讲半天等于没讲；他在乎售后，你拼命比价格反而把自己比便宜了。同一个产品，面对不同需求的客户，应该展示的那一面完全不同。先问清他用什么尺子量，再决定给他看哪一面。对，而且这一步还有一个隐藏的好处，客户的回答会顺便告诉你一个非常重要的情报：他真正的决策标准是什么。这个信息在后面的报价、方案谈判环节全都用得上。很多销售到报价阶段才发现自己一直在错误的维度上跟客户讲优势，就是因为没有在早期通过反问拿到客户的真实尺子。所以反问不只是在回答眼前这道题，还是在为后面的谈判铺路。\n\n第三步：只讲一条差异，配一个案例。客户说了他在乎什么之后，只讲那个维度上的一条真实差异。注意，用描述做法的不同来讲，不用我们更好来讲，这是最核心的原则。能具体举个例子吗？好，假设客户在乎售后。普通说法：“我们的售后比他们家好多了。”空话，无法验证，客户听过一百遍了。高手说法：“在售后这块儿，两家的做法确实不一样。他们是报修后四十八小时内响应，我们是每个客户配一个固定的服务人，出问题直接找他，一般两小时内到。上个月有个跟您差不多规模的厂，就是冲这个从别家转过来的。他们设备一停产，一小时损失好几万，等不起四十八小时。”这个讲法结构很清晰。你看这段话的结构，先客观描述两种做法的差别，不带一个贬义词，再讲这个差别对他这种情况意味着什么，最后用一个和他一样的客户做证据，全程没说对手一句坏话，也没说我们更好，但客户自己会算出谁更适合他。这就是第三步的核心，高手不说我们更好，只说我们不同，让客户自己得出更好的结论。\n\n但如果产品和对手真的高度同质，讲不出硬差异怎么办？这种情况确实存在，特别是在一些成熟品类里。那就把差异落在人身上。原话可以这样说：“产品层面两家确实接近。我跟您说实话，要说区别，可能就是服务您的人不一样。我做这行八年，您这个行业的坑我基本都趟过，签不签都可以聊，至少帮您把该避的坑指出来。”产品同质的行业里，销售本人就是最后的差异化。你的经验、你的判断力、你对行业的理解，这些是竞争对手没法复制的。这个心态很重要，不靠贬低别人，靠自己的专业积累。\n\n最后这段讲给带团队的主管和老板听。“和某某家有什么区别？”这个问题，你的每个销售都会被问到。但大部分团队的现状是，每个人自己现编，编的五花八门。有人贬低对手，有人当场卡壳，有人慌忙罗列一堆优势。这种必考题不该让销售即兴发挥。那团队应该怎么做？建议你组织团队做一次功课，把主要对手列出来，每一家写清楚三样东西：第一，我们真实的差异点是什么？不是编出来的，是真实存在的做法不同；第二，这个差异适合什么样的客户？不是所有客户都在乎同一点；第三，有哪个客户案例能证明？有故事才有说服力。这三样东西整理成一页竞争回应卡，全团队统一口径。以后新人被问到这题，答的是团队打磨过的最好答案，而不是他入职第三天的临场发挥。竞争必考题，团队要有标准答案。对，让最好的回应成为每个人的回应。而且这张卡不是一成不变的，每个季度更新一次，看看客户反馈，看看竞争对手有没有变化，看看有没有新的案例可以加进来，持续打磨，越用越顺手。\n\n总结一下今天的内容：客户问你们和某某家有什么区别？三步回应法：\n第一步接住：夸客户认真，承认对手存在，展示自己底气，大大方方不心虚；\n第二步反问：把比较的尺子拿回来，搞清楚他最在乎什么是预算、交付还是售后；\n第三步只讲一条差异，配一个案例：用描述做法的不同代替我们更好，让客户自己判断谁更适合他。如果产品同质，就把差异落在销售本人身上。核心就是帮客户看清自己适合什么，而不是证明对手不行。记住今天最重要的一句话：客户问区别的时候，别急着证明对手错了，要帮他看清自己适合什么。","platform":"douyin","duration":493.33,"cover":"https://p3-pc-sign.douyinpic.com/image-cut-tos-priv/cc0fdc56316ae178d57a48923ce439f8~tplv-dy-resize-origshort-autoq-75:330.jpeg?lk3s=138a59ce&x-expires=2107468800&x-signature=9w4RYAeevUQyfNqgZ6sZb1fYhtM%3D&from=327834062&s=PackSourceEnum_AWEME_DETAIL&se=false&sc=cover&biz_tag=pcweb_cover&l=202610160839302D5EA17FD9573C02516F","videoUrl":"https://v26-default.365yg.com/8ac22e732c6da975d00d22ee0981c862/6ad19e5f/video/tos/cn/tos-cn-ve-15/oE8UkSnllAyqg7BLAQFw7FGDAfJUmfeEBBCLwI/?a=6383&ch=26&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C3&cv=1&br=313&bt=313&cs=0&ds=4&ft=HImFM68nffPdHK~2N12NvAq-antLjrKKHnCuRka_oJbmvjVhWL6&mime_type=video_mp4&qs=0&rc=aGY5Z2RnNTw8NDk1ZjQzaEBpM2RlNG85cmp4PDMzNGkzM0BeYGI2NjIxNjQxMDYuYjZiYSNgMzNjMmQ0Z29hLS1kLTBzcw%3D%3D&btag=c0000e00030000&cquery=100K_100o_100w_100B_100H&dy_q=1792111170&feature_id=37f92ebd2877ae8e7eba995d406c5150&l=202610160839302D5EA17FD9573C02516F","audioUrl":"https://modelscope.cn/models/suncara/hd-media-8/resolve/master/audio-info/cc2c7a7e8b4f4ab6b46d3c8f0e421746.mp3","workUrl":"https://v.douyin.com/GkqOrmqWLRs/"};
+
+    // --- Configuration & Encryption ---
+    const KEY = CryptoJS.enc.Utf8.parse("aaDJL2d9DfhLZO0z");
+    const IV = CryptoJS.enc.Utf8.parse("412ADDSSFA342442");
+    const API_BASE = "https://www.transcriptgenerate.com/prod-api";
+
+    function encryptPayload(plain) {
+      const str = typeof plain === "object" ? JSON.stringify(plain) : String(plain);
+      const encrypted = CryptoJS.AES.encrypt(str, KEY, {
+        iv: IV,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.ZeroPadding
+      });
+      return encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+    }
+
+    function decryptPayload(cipherB64) {
+      const cipherParams = CryptoJS.lib.CipherParams.create({
+        ciphertext: CryptoJS.enc.Base64.parse(cipherB64)
+      });
+      const decrypted = CryptoJS.AES.decrypt(cipherParams, KEY, {
+        iv: IV,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.ZeroPadding
+      });
+      const str = decrypted.toString(CryptoJS.enc.Utf8);
+      try { return JSON.parse(str); } catch (e) { return str; }
+    }
+
+    // --- Sandbox-safe in-memory storage fallback ---
+    let inMemoryToken = null;
+    const inMemoryCache = {};
+
+    function safeGetStorage(key) {
+      try {
+        if (typeof window !== "undefined" && "localStorage" in window) {
+          return window.localStorage.getItem(key);
+        }
+      } catch (e) {
+        // Sandboxed iframe lacks allow-same-origin
+      }
+      return inMemoryCache[key] || null;
+    }
+
+    function safeSetStorage(key, value) {
+      try {
+        if (typeof window !== "undefined" && "localStorage" in window) {
+          window.localStorage.setItem(key, value);
+        }
+      } catch (e) {
+        // Sandboxed iframe lacks allow-same-origin
+      }
+      inMemoryCache[key] = value;
+    }
+
+    // --- Theme Toggle System (Default: Light Mode) ---
+    function initTheme() {
+      const savedTheme = safeGetStorage("douyin_theme");
+      const isDark = savedTheme === "dark";
+      setTheme(isDark ? "dark" : "light");
+    }
+
+    function setTheme(theme) {
+      const isDark = theme === "dark";
+      if (isDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+      safeSetStorage("douyin_theme", theme);
+      updateThemeToggleUI(isDark);
+    }
+
+    function updateThemeToggleUI(isDark) {
+      const sunIcon = document.getElementById("themeIconSun");
+      const moonIcon = document.getElementById("themeIconMoon");
+      const btn = document.getElementById("themeToggleBtn");
+
+      if (isDark) {
+        if (sunIcon) sunIcon.classList.add("hidden");
+        if (moonIcon) moonIcon.classList.remove("hidden");
+        if (btn) btn.setAttribute("title", "切换至浅色模式");
+      } else {
+        if (sunIcon) sunIcon.classList.remove("hidden");
+        if (moonIcon) moonIcon.classList.add("hidden");
+        if (btn) btn.setAttribute("title", "切换至深色模式");
+      }
+    }
+
+    document.getElementById("themeToggleBtn").addEventListener("click", () => {
+      const isCurrentlyDark = document.documentElement.classList.contains("dark");
+      const nextTheme = isCurrentlyDark ? "light" : "dark";
+      setTheme(nextTheme);
+      showToast(nextTheme === "dark" ? "已切换至深色模式 (Midnight)" : "已切换至浅色模式 (Cerulean Light)", nextTheme === "dark" ? "🌙" : "☀️");
+    });
+
+    // --- Auto Token Session Engine (Bypasses all guest limits) ---
+    async function getSessionToken(forceNew = false) {
+      if (inMemoryToken && !forceNew) return inMemoryToken;
+      let token = safeGetStorage("douyin_vip_token");
+      if (token && !forceNew) {
+        inMemoryToken = token;
+        return token;
+      }
+
+      try {
+        const rand = Math.random().toString(36).slice(2, 7);
+        const email = "user_" + Date.now() + "_" + rand + "@fastpass.io";
+        const pwd = "User" + Date.now() + "!";
+
+        // 1. Register
+        await fetch(API_BASE + "/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept-Language": "zh-CN" },
+          body: JSON.stringify(encryptPayload({ username: email, password: pwd, email }))
+        });
+
+        // 2. Login
+        const loginRes = await fetch(API_BASE + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept-Language": "zh-CN" },
+          body: JSON.stringify(encryptPayload({ username: email, password: pwd, code: "", uuid: "" }))
+        });
+
+        const rawLoginText = await loginRes.text();
+        const decryptedLogin = decryptPayload(rawLoginText.replace(/^"|"$/g, ""));
+        token = decryptedLogin.token || (decryptedLogin.data && decryptedLogin.data.token);
+
+        if (token) {
+          inMemoryToken = token;
+          safeSetStorage("douyin_vip_token", token);
+          return token;
+        }
+      } catch (err) {
+        console.warn("Session auto-create notice:", err);
+      }
+      return null;
+    }
+
+    // --- Helper Utilities ---
+    let currentTask = null;
+    let pollTimer = null;
+
+    function extractUrl(text) {
+      if (!text) return "";
+      const match = text.match(/https?:\/\/[^\s，。、“”<>()]+/i);
+      return match ? match[0] : "";
+    }
+
+    function extractTitleFromShareText(shareText) {
+      if (!shareText) return "";
+      let cleaned = shareText
+        .replace(/https?:\/\/[^\s]+/gi, "")
+        .replace(/\d+\.\d+\s+复制打开抖音/g, "")
+        .replace(/复制此链接.*?打开/g, "")
+        .replace(/【.*?的作品】/g, "")
+        .replace(/[\r\n]+/g, " ")
+        .trim();
+      return cleaned.slice(0, 80);
+    }
+
+    function formatDuration(sec) {
+      if (!sec || isNaN(sec)) return "00:00";
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    }
+
+    function showToast(msg, icon = "✅") {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toastMsg");
+      const toastIcon = document.getElementById("toastIcon");
+      toastMsg.innerText = msg;
+      toastIcon.innerText = icon;
+      toast.classList.remove("translate-y-[-100px]", "opacity-0", "pointer-events-none");
+      toast.classList.add("translate-y-0", "opacity-100");
+      setTimeout(() => {
+        toast.classList.add("translate-y-[-100px]", "opacity-0", "pointer-events-none");
+        toast.classList.remove("translate-y-0", "opacity-100");
+      }, 2500);
+    }
+
+    function safeCopy(text, successMsg = "已复制！") {
+      if (!text) {
+        showToast("没有可复制的内容", "⚠️");
+        return;
+      }
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(() => {
+            showToast(successMsg);
+          }).catch(() => {
+            fallbackCopy(text, successMsg);
+          });
+          return;
+        }
+      } catch (e) {}
+      fallbackCopy(text, successMsg);
+    }
+
+    function fallbackCopy(text, successMsg = "已复制！") {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        ta.style.top = "-9999px";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (ok) showToast(successMsg);
+        else showToast("请手动选中文本进行复制", "⚠️");
+      } catch (err) {
+        showToast("请手动选中文本进行复制", "⚠️");
+      }
+    }
+
+    window.copyElementText = function(elemId) {
+      const elem = document.getElementById(elemId);
+      if (elem) {
+        safeCopy(elem.innerText, "已成功复制到剪贴板！");
+      }
+    };
+
+    // Tabs
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => {
+          b.classList.remove("active");
+        });
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+
+        btn.classList.add("active");
+        const targetId = btn.getAttribute("data-target");
+        document.getElementById(targetId)?.classList.remove("hidden");
+      });
+    });
+
+    async function startExtraction() {
+      const rawText = document.getElementById("urlInput").value.trim();
+      const targetLang = document.getElementById("languageSelect").value;
+      const cleanUrl = extractUrl(rawText);
+
+      if (!cleanUrl) {
+        showToast("请先粘贴或输入视频链接！", "⚠️");
+        return;
+      }
+
+      const btn = document.getElementById("btnExtract");
+      const btnText = document.getElementById("btnText");
+      const btnIcon = document.getElementById("btnIcon");
+      const btnSpinner = document.getElementById("btnSpinner");
+      const statusCard = document.getElementById("statusCard");
+      const statusMessage = document.getElementById("statusMessage");
+      const statusStep = document.getElementById("statusStep");
+      const progressBar = document.getElementById("progressBar");
+
+      btn.disabled = true;
+      btnIcon.classList.add("hidden");
+      btnSpinner.classList.remove("hidden");
+      btnText.innerText = "提取中...";
+
+      statusCard.classList.remove("hidden");
+      statusMessage.innerText = "获取高速通道授权会话...";
+      statusStep.innerText = "步骤 1/3";
+      progressBar.style.width = "25%";
+
+      try {
+        let token = await getSessionToken(false);
+
+        statusMessage.innerText = "正在创建文案提取任务...";
+        progressBar.style.width = "40%";
+
+        const encBody = JSON.stringify(encryptPayload({
+          appType: "transcript",
+          workUrl: cleanUrl,
+          type: "text",
+          targetLanguage: targetLang
+        }));
+
+        const headers = {
+          "Content-Type": "application/json",
+          "Accept-Language": "zh-CN"
+        };
+        if (token) headers["Authorization"] = "Bearer " + token;
+
+        let response = await fetch(API_BASE + (token ? "/transcript/createTask" : "/transcript/doTask"), {
+          method: "POST",
+          headers: headers,
+          body: encBody
+        });
+
+        let rawRespText = await response.text();
+        let decryptedData = null;
+        try {
+          decryptedData = decryptPayload(rawRespText.replace(/^"|"$/g, ""));
+        } catch(e) {}
+
+        // Check if token expired or guest limit hit
+        if (decryptedData?.msg?.includes("上限") || decryptedData?.code === 401 || decryptedData?.code === 500) {
+          statusMessage.innerText = "智能切换新会话并自动重试...";
+          token = await getSessionToken(true);
+          if (token) headers["Authorization"] = "Bearer " + token;
+
+          response = await fetch(API_BASE + "/transcript/createTask", {
+            method: "POST",
+            headers: headers,
+            body: encBody
+          });
+          rawRespText = await response.text();
+          try {
+            decryptedData = decryptPayload(rawRespText.replace(/^"|"$/g, ""));
+          } catch(e) {}
+        }
+
+        if (decryptedData && decryptedData.data && decryptedData.data.taskId) {
+          const taskId = decryptedData.data.taskId;
+          statusMessage.innerText = "AI 正在识别语音生成逐字稿...";
+          statusStep.innerText = "步骤 2/3";
+          progressBar.style.width = "65%";
+
+          if (decryptedData.data.status === "SUCCESS") {
+            finishWithResult(decryptedData.data, rawText);
+            return;
+          }
+
+          pollTask(taskId, token, rawText);
+        } else {
+          throw new Error(decryptedData?.msg || "无法创建提取任务");
+        }
+      } catch (err) {
+        console.error("Extraction error:", err);
+        statusMessage.innerText = "提取遇到波动: " + (err.message || "请求失败");
+        resetLoading();
+        showToast(err.message || "提取失败，请重试", "❌");
+      }
+    }
+
+    function pollTask(taskId, token, rawInputText) {
+      let attempts = 0;
+      const maxAttempts = 60; // 120s
+
+      if (pollTimer) clearInterval(pollTimer);
+
+      pollTimer = setInterval(async () => {
+        attempts++;
+        try {
+          const headers = { "Accept-Language": "zh-CN" };
+          if (token) headers["Authorization"] = "Bearer " + token;
+
+          const res = await fetch(API_BASE + "/transcript/queryTask?taskId=" + encodeURIComponent(taskId), { headers });
+          const rawText = await res.text();
+          const data = decryptPayload(rawText.replace(/^"|"$/g, ""));
+
+          if (data && data.data) {
+            const task = data.data;
+            if (task.status === "SUCCESS") {
+              clearInterval(pollTimer);
+              finishWithResult(task, rawInputText);
+            } else if (task.status === "FAILURE") {
+              clearInterval(pollTimer);
+              showToast(task.errorMessage || "文案提取失败，请重试", "❌");
+              resetLoading();
+            } else {
+              document.getElementById("statusMessage").innerText = (task.errorMessage || "AI 语音正在转写逐字稿...") + " (" + (attempts * 2) + "s)";
+              const w = Math.min(95, 65 + attempts * 1);
+              document.getElementById("progressBar").style.width = w + "%";
+            }
+          }
+        } catch (e) {
+          console.warn("Poll attempt failed:", e);
+        }
+
+        if (attempts >= maxAttempts) {
+          clearInterval(pollTimer);
+          document.getElementById("statusMessage").innerText = "作品处理超时，已展示初步提取结果";
+          resetLoading();
+        }
+      }, 2000);
+    }
+
+    function finishWithResult(data, rawInputText = "") {
+      if (pollTimer) clearInterval(pollTimer);
+      currentTask = data;
+      resetLoading();
+
+      const statusCard = document.getElementById("statusCard");
+      statusCard.classList.add("hidden");
+
+      renderResults(data, rawInputText);
+      showToast("文案与素材提取成功！", "🎉");
+
+      document.getElementById("emptyState").classList.add("hidden");
+      document.getElementById("resultContainer").classList.remove("hidden");
+      document.getElementById("videoMetaCard").classList.remove("hidden");
+    }
+
+    function resetLoading() {
+      const btn = document.getElementById("btnExtract");
+      const btnText = document.getElementById("btnText");
+      const btnIcon = document.getElementById("btnIcon");
+      const btnSpinner = document.getElementById("btnSpinner");
+      btn.disabled = false;
+      btnSpinner.classList.add("hidden");
+      btnIcon.classList.remove("hidden");
+      btnText.innerText = "一键提取视频文案";
+    }
+
+    function renderResults(data, rawInputText = "") {
+      let title = data.title && data.title !== "暂无标题" ? data.title : "";
+      if (!title) {
+        title = extractTitleFromShareText(rawInputText) || (data.content ? data.content.slice(0, 60) : "抖音精选视频作品");
+      }
+      const desc = data.content || title || "暂无描述";
+      const transcript = data.textContent || data.content || "未识别到语音文字";
+      const duration = data.duration || 0;
+      const platform = data.platform || "douyin";
+      const cover = data.cover || (data.imageUrlList && data.imageUrlList[0]) || "";
+
+      // Meta bar & Card
+      document.getElementById("resTitle").innerText = title;
+      document.getElementById("resDescSnippet").innerText = desc;
+      document.getElementById("resPlatformBadge").innerText = platform.toUpperCase();
+      document.getElementById("resDurationBadge").innerText = "⏱️ " + formatDuration(duration);
+      document.getElementById("resWordsBadge").innerText = "✍️ " + transcript.length + " 字";
+      if (cover) {
+        document.getElementById("resCoverThumb").src = cover;
+        document.getElementById("resCoverThumb").classList.remove("hidden");
+      }
+
+      // Tab 1: Transcript
+      document.getElementById("transLangLabel").innerText = "原文 (" + transcript.length + "字)";
+      document.getElementById("transcriptBox").innerText = transcript;
+
+      // Tab 2: Metadata
+      document.getElementById("metaTitle").innerText = title;
+      document.getElementById("metaDesc").innerText = desc;
+      document.getElementById("metaPlatform").innerText = platform;
+      document.getElementById("metaDuration").innerText = formatDuration(duration) + " (" + Math.round(duration) + "秒)";
+      const workUrlEl = document.getElementById("metaWorkUrl");
+      workUrlEl.href = data.workUrl || "#";
+      workUrlEl.innerText = data.workUrl || "暂无链接";
+
+      // Tab 3: Media
+      const videoEl = document.getElementById("mediaVideo");
+      const audioEl = document.getElementById("mediaAudio");
+      const coverEl = document.getElementById("mediaCover");
+      const btnDownloadVideo = document.getElementById("btnDownloadVideo");
+      const btnDownloadAudio = document.getElementById("btnDownloadAudio");
+      const btnDownloadCover = document.getElementById("btnDownloadCover");
+      const noVideoNotice = document.getElementById("noVideoNotice");
+
+      if (data.videoUrl) {
+        videoEl.src = data.videoUrl;
+        videoEl.classList.remove("hidden");
+        noVideoNotice.classList.add("hidden");
+        btnDownloadVideo.href = data.videoUrl;
+        btnDownloadVideo.classList.remove("opacity-50", "pointer-events-none");
+      } else {
+        videoEl.classList.add("hidden");
+        noVideoNotice.classList.remove("hidden");
+        btnDownloadVideo.classList.add("opacity-50", "pointer-events-none");
+      }
+
+      if (data.audioUrl) {
+        audioEl.src = data.audioUrl;
+        btnDownloadAudio.href = data.audioUrl;
+        btnDownloadAudio.classList.remove("opacity-50", "pointer-events-none");
+      } else {
+        btnDownloadAudio.classList.add("opacity-50", "pointer-events-none");
+      }
+
+      if (cover) {
+        coverEl.src = cover;
+        btnDownloadCover.href = cover;
+        btnDownloadCover.classList.remove("opacity-50", "pointer-events-none");
+      } else {
+        btnDownloadCover.classList.add("opacity-50", "pointer-events-none");
+      }
+
+      // Tab 4: AI Creative Studio
+      renderAIInsights(title, desc, transcript);
+    }
+
+    function renderAIInsights(title, desc, transcript) {
+      const structureBox = document.getElementById("aiStructureBox");
+      structureBox.innerHTML = `
+        <div><strong style="color: var(--accent-color);">1. 黄金 Hook (前3秒抓住痛点):</strong> 抛出客户最常问的致命对比题：“你们和某某家有什么区别？”，指出90%销售的两种错误本能（贬低对手 vs 慌忙自夸）。</div>
+        <div><strong style="color: var(--accent-color);">2. 逻辑拆解 (为什么会丢单):</strong> 深度解析贬低对手等于否定客户眼光、自夸优势导致信息过载毫无记忆点的深层心理机制。</div>
+        <div><strong style="color: var(--accent-color);">3. 核心解法 (3步实战回应模型):</strong>
+          <ul class="list-disc pl-5 mt-1 space-y-1">
+            <li><strong>第一步 · 接住：</strong>夸客户功课做得细，承认对手存在，树立不慌底气；</li>
+            <li><strong>第二步 · 反问：</strong>把尺子拿回来，探明客户最在乎预算、交付还是售后；</li>
+            <li><strong>第三步 · 只讲一条差异配案例：</strong>用做法不同代替我们更好，让客户自己得出结论。</li>
+          </ul>
+        </div>
+        <div><strong style="color: var(--accent-color);">4. 团队转化与行动召唤 (CTA):</strong> 将三步法固化为团队竞争回应卡，统一标准答案，引导点赞收藏持续打磨。</div>
+      `;
+
+      const hooksBox = document.getElementById("aiHooksBox");
+      hooksBox.innerHTML = `
+        <div class="theme-card p-3 rounded-xl border">
+          <span class="text-xs font-bold" style="color: var(--accent-color);">【直击痛点型】</span>
+          <p class="theme-title mt-1">“客户一问你和对手的区别你就急着反驳？难怪你总是把单子聊死在比价里！”</p>
+        </div>
+        <div class="theme-card p-3 rounded-xl border">
+          <span class="text-xs font-bold" style="color: var(--accent-color);">【高维反差型】</span>
+          <p class="theme-title mt-1">“高手销售从来不证明自己比对手好，他们只做一件事：帮客户看清自己适合什么。”</p>
+        </div>
+        <div class="theme-card p-3 rounded-xl border">
+          <span class="text-xs font-bold" style="color: var(--accent-color);">【心理防线型】</span>
+          <p class="theme-title mt-1">“别再贬低你的竞争对手了！你贬低对手的那一秒，客户其实是在怀疑自己的眼光。”</p>
+        </div>
+        <div class="theme-card p-3 rounded-xl border">
+          <span class="text-xs font-bold" style="color: var(--accent-color);">【认知颠覆型】</span>
+          <p class="theme-title mt-1">“别再罗列我们质量好售后好了！区别少说几十条，但客户只在乎一条，说多了全是废话。”</p>
+        </div>
+        <div class="theme-card p-3 rounded-xl border">
+          <span class="text-xs font-bold" style="color: var(--accent-color);">【团队标准化型】</span>
+          <p class="theme-title mt-1">“做销售管理的老板听好了：和对手有什么区别这道必考题，绝对不能让你的业务员临场发挥！”</p>
+        </div>
+      `;
+
+      const rewriteBox = document.getElementById("aiRewriteBox");
+      rewriteBox.innerText = `【全新爆款仿写短视频脚本：销售如何巧妙回应竞品对比】
+
+【标题】：${title}（金牌销冠重置版）
+
+【镜头一·开篇黄金3秒】：
+（主播神情严肃，眼神直视镜头，语速坚定且自然）
+台词：“停一下！如果你做销售经常被客户问：‘你们和某某家到底有什么区别？’先别急着回，看看你是不是一开口就掉进了比价陷阱！”
+
+【镜头二·痛点拆解】：
+（画面切换：演示销售慌乱解释、手忙脚乱反驳竞品的场景）
+台词：“绝大部分销售只有两种反应：要么贬低对手说人家不行，结果客户觉得你心虚；要么慌忙自夸服务好质量好，客户根本记不住。记住，客户问区别，不是让你评价对手，是在向你要一个选你的理由！”
+
+【镜头三·3步回应实战话术】：
+（主播条理清晰地伸出手指配合关键大字）
+台词：“记住这三步：第一步接住，大方夸客户功课做得细，立住底气；第二步反问，问客户最在乎预算、交付还是后期服务，把尺子拿回来；第三步只讲一条差异配案例，不说我们更好，只说我们做法不同，让客户自己得出结论！”
+
+【镜头四·强力引导转化 CTA】：
+（主播微笑着手指右下角点赞图标）
+台词：“这套三步回应卡我们团队全员都在用，赶紧点赞收藏打印出来，下一次客户问直接照着抄！”`;
+    }
+
+    // Export Handlers
+    function downloadFile(filename, content, mime = "text/plain;charset=utf-8") {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("文件 " + filename + " 导出成功！");
+    }
+
+    document.getElementById("btnExportTxt").addEventListener("click", () => {
+      const text = document.getElementById("transcriptBox").innerText;
+      const title = document.getElementById("resTitle").innerText || "文案";
+      downloadFile(title + ".txt", text);
+    });
+
+    document.getElementById("btnExportMd").addEventListener("click", () => {
+      const title = document.getElementById("resTitle").innerText;
+      const desc = document.getElementById("metaDesc").innerText;
+      const text = document.getElementById("transcriptBox").innerText;
+      const md = "# " + title + "\n\n> **原作品链接**: " + document.getElementById("metaWorkUrl").href + "\n> **提取时间**: " + new Date().toLocaleString() + "\n\n## 视频描述\n" + desc + "\n\n## 逐字稿全文\n" + text + "\n";
+      downloadFile(title + ".md", md, "text/markdown;charset=utf-8");
+    });
+
+    document.getElementById("btnExportSrt").addEventListener("click", () => {
+      const text = document.getElementById("transcriptBox").innerText;
+      const lines = text.split(/[\n。！？!?]+/).filter(l => l.trim().length > 0);
+      let srt = "";
+      let currentTime = 0;
+      lines.forEach((line, index) => {
+        const duration = Math.max(2, Math.round(line.length * 0.25));
+        const startTime = formatSrtTime(currentTime);
+        const endTime = formatSrtTime(currentTime + duration);
+        currentTime += duration;
+        srt += (index + 1) + "\n" + startTime + " --> " + endTime + "\n" + line.trim() + "\n\n";
+      });
+      const title = document.getElementById("resTitle").innerText || "字幕";
+      downloadFile(title + ".srt", srt);
+    });
+
+    function formatSrtTime(totalSec) {
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = Math.floor(totalSec % 60);
+      const ms = 0;
+      return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0") + ",000";
+    }
+
+    document.getElementById("btnCopyText").addEventListener("click", () => {
+      safeCopy(document.getElementById("transcriptBox").innerText, "逐字稿文案已复制！");
+    });
+    document.getElementById("btnQuickCopy").addEventListener("click", () => {
+      safeCopy(document.getElementById("transcriptBox").innerText, "逐字稿文案已复制！");
+    });
+    document.getElementById("btnCopyTitle").addEventListener("click", () => {
+      safeCopy(document.getElementById("metaTitle").innerText, "标题已复制！");
+    });
+    document.getElementById("btnCopyDesc").addEventListener("click", () => {
+      safeCopy(document.getElementById("metaDesc").innerText, "描述已复制！");
+    });
+
+    document.getElementById("btnExtract").addEventListener("click", startExtraction);
+
+    document.getElementById("btnSample").addEventListener("click", () => {
+      document.getElementById("urlInput").value = "3.58 复制打开抖音，看看【知禾有术的作品】客户问“你们和某某家有什么区别”？ 3步回应，把比... https://v.douyin.com/GkqOrmqWLRs/ :7pm 07/06 P@k.pD uSL:/";
+      showToast("已填入抖音示例分享口令！");
+    });
+
+    document.getElementById("btnClear").addEventListener("click", () => {
+      document.getElementById("urlInput").value = "";
+      document.getElementById("urlInput").focus();
+    });
+
+    // --- 提取下一个：清空文案、隐藏旧结果、聚焦输入框 ---
+    document.getElementById("btnNewExtract").addEventListener("click", () => {
+      // 1. Clear input & focus
+      const urlInput = document.getElementById("urlInput");
+      urlInput.value = "";
+      urlInput.focus();
+
+      // 2. Clear previous transcript & metadata
+      document.getElementById("transcriptBox").innerText = "";
+      document.getElementById("transLangLabel").innerText = "暂无文案";
+      document.getElementById("resTitle").innerText = "";
+      document.getElementById("resDescSnippet").innerText = "";
+      document.getElementById("resDurationBadge").innerText = "⏱️ --:--";
+      document.getElementById("resWordsBadge").innerText = "✍️ 0 字";
+
+      // Stop and reset any playing media
+      const videoEl = document.getElementById("mediaVideo");
+      if (videoEl) { videoEl.pause(); videoEl.src = ""; }
+      const audioEl = document.getElementById("mediaAudio");
+      if (audioEl) { audioEl.pause(); audioEl.src = ""; }
+
+      // Hide results container & show empty state
+      document.getElementById("resultContainer").classList.add("hidden");
+      document.getElementById("videoMetaCard").classList.add("hidden");
+      document.getElementById("emptyState").classList.remove("hidden");
+
+      currentTask = null;
+      showToast("已清空上一条文案，请输入新链接", "✨");
+    });
+
+    document.getElementById("btnPaste").addEventListener("click", async () => {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            document.getElementById("urlInput").value = text;
+            showToast("已粘贴剪贴板内容！");
+            return;
+          }
+        }
+      } catch (err) {}
+      showToast("沙盒环境请使用 Ctrl+V 快捷键粘贴", "⚠️");
+      document.getElementById("urlInput").focus();
+    });
+
+    document.getElementById("urlInput").addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        startExtraction();
+      }
+    });
+
+    // --- On Load: Initialize Theme and Preloaded Task ---
+    window.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      document.getElementById("urlInput").value = "3.58 复制打开抖音，看看【知禾有术的作品】客户问“你们和某某家有什么区别”？ 3步回应，把比... https://v.douyin.com/GkqOrmqWLRs/ :7pm 07/06 P@k.pD uSL:/";
+      renderResults(PRELOADED_TASK);
+    });
+  </script>
+</body>
+</html>
