@@ -259,6 +259,21 @@ crypto-js/mode-ctr-gladman.js:
           </span>
         </div>
 
+        <!-- 100% Free Badge -->
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>100% 永久免费 · 无时长限制</span>
+        </div>
+
+        <!-- Free Engine Settings Button -->
+        <button id="engineSettingsBtn" title="配置免费 AI 转写引擎 (无时长限制)"
+                class="theme-btn-sec px-3 h-10 rounded-2xl border flex items-center gap-1.5 text-xs font-semibold shadow-sm cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200">
+          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          </svg>
+          <span class="hidden md:inline">免费引擎设置</span>
+        </button>
+
         <!-- Light / Dark Mode Toggle Button (Icon Only) -->
         <button id="themeToggleBtn" title="切换浅色 / 深色模式" aria-label="切换浅色 / 深色模式"
                 class="theme-btn-sec w-10 h-10 rounded-2xl border flex items-center justify-center shadow-sm cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200">
@@ -644,6 +659,53 @@ crypto-js/mode-ctr-gladman.js:
 
   </div>
 
+  <!-- Free Engine Settings Modal -->
+  <div id="engineModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm hidden transition-all duration-200">
+    <div class="theme-card rounded-3xl border p-6 sm:p-8 max-w-lg w-full shadow-2xl relative space-y-5">
+      <div class="flex items-center justify-between border-b pb-4" style="border-color: var(--header-border);">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">⚡</div>
+          <h3 class="font-bold text-base sm:text-lg theme-title">免费转写引擎配置 (无时长限制)</h3>
+        </div>
+        <button id="closeEngineModalBtn" class="w-8 h-8 rounded-xl theme-btn-sec flex items-center justify-center border text-sm cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs sm:text-sm">
+        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <span>✅ 100% 真正永久免费，彻底告别会员套路</span>
+          </div>
+          <p class="text-xs leading-relaxed opacity-90">
+            针对任意时长长视频（如 10 分钟、30 分钟大课、演讲、纪实），直接调用 Google 官方 0 门槛免费 Gemini 2.0 Flash 接口，单次支持数小时音频，生成超高准确率的标点与智能分段。
+          </p>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1.5 theme-title">
+            Google Gemini API Key <span class="text-xs font-normal opacity-70">(永久免费)</span>
+          </label>
+          <input id="geminiApiKeyInput" type="password" placeholder="AIzaSy..."
+                 class="theme-input w-full px-4 py-2.5 rounded-xl border text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#5b86b6] transition-all">
+          <div class="mt-2 text-xs theme-sub flex items-center justify-between">
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-[#5b86b6] hover:underline flex items-center gap-1">
+              <span>👉 免费获取 API Key (Google AI Studio)</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+            </a>
+            <span class="opacity-60">零门槛 · 免信用卡</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t" style="border-color: var(--header-border);">
+        <button id="btnClearKey" class="text-xs text-red-500 hover:underline px-2 py-1">清除已存配置</button>
+        <div class="flex items-center gap-2">
+          <button id="btnCancelModal" class="theme-btn-sec px-4 py-2 rounded-xl border text-xs font-medium cursor-pointer">取消</button>
+          <button id="btnSaveKey" class="theme-btn-pri px-5 py-2 rounded-xl text-xs font-bold shadow-md cursor-pointer">保存并启用</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
     <div class="theme-card rounded-2xl border px-4 py-3 shadow-2xl text-xs sm:text-sm flex items-center gap-2">
@@ -1018,6 +1080,16 @@ crypto-js/mode-ctr-gladman.js:
               finishWithResult(task, rawInputText);
             } else if (task.status === "FAILURE") {
               clearInterval(pollTimer);
+              const isQuota = task.errorMessage && (
+                task.errorMessage.includes("权益不足") || 
+                task.errorMessage.includes("时长") || 
+                task.errorMessage.includes("会员") ||
+                task.errorMessage.includes("秒")
+              );
+              if (isQuota && task.audioUrl) {
+                handleQuotaFallback(task, rawInputText);
+                return;
+              }
               showToast(task.errorMessage || "文案提取失败，请重试", "❌");
               resetLoading();
             } else {
@@ -1036,6 +1108,182 @@ crypto-js/mode-ctr-gladman.js:
           resetLoading();
         }
       }, 2000);
+    }
+
+    // --- 100% Free Gemini Flash Audio Transcription Engine ---
+    async function transcribeWithGeminiApi(audioUrl, apiKey) {
+      const audioResp = await fetch(audioUrl);
+      if (!audioResp.ok) throw new Error("无法下载音频文件进行转写");
+      const blob = await audioResp.blob();
+      
+      const base64Audio = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const res = reader.result;
+          resolve(res.split(",")[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+      const payload = {
+        contents: [{
+          parts: [
+            {
+              inlineData: {
+                mimeType: blob.type || "audio/mp3",
+                data: base64Audio
+              }
+            },
+            {
+              text: "请将这段音频中的语音完整转录为中文文本（逐字稿）。要求：1. 保持原声发言原意，准确转写；2. 自动添加规范中文标点（逗号、句号、问号）；3. 根据语意和逻辑停顿合理分段；4. 直接输出转写文本正文，严禁输出任何开场白或解释语。"
+            }
+          ]
+        }]
+      };
+
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error("Gemini API 返回错误: " + res.status);
+      }
+
+      const data = await res.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error("未解析到有效转写文本");
+      return text.trim();
+    }
+
+    async function handleQuotaFallback(task, rawInputText) {
+      const statusMessage = document.getElementById("statusMessage");
+      const progressBar = document.getElementById("progressBar");
+
+      statusMessage.innerText = "已获取长视频原声音频，正在通过免费引擎生成全文逐字稿...";
+      progressBar.style.width = "75%";
+
+      const geminiKey = safeGetStorage("douyin_gemini_key");
+
+      if (geminiKey && task.audioUrl) {
+        statusMessage.innerText = "调用 Gemini 2.0 Flash 极速转写长视频逐字稿 (约5-10秒)...";
+        progressBar.style.width = "85%";
+        try {
+          const transcript = await transcribeWithGeminiApi(task.audioUrl, geminiKey);
+          task.textContent = transcript;
+          finishWithResult(task, rawInputText);
+          showToast("长视频逐字稿已通过免费引擎转写成功！", "🎉");
+          return;
+        } catch (err) {
+          console.error("Gemini direct transcription failed:", err);
+        }
+      }
+
+      // No key saved yet: render media assets and prompt in transcript area
+      finishWithResult(task, rawInputText);
+      showLongVideoKeyPrompt(task);
+      showToast("音视频素材已就绪！长视频可一键免费转写", "💡");
+    }
+
+    function showLongVideoKeyPrompt(task) {
+      const box = document.getElementById("transcriptBox");
+      const durationSec = Math.round(task.duration || 0);
+      box.innerHTML = `
+        <div class="py-8 px-6 text-center rounded-2xl border border-dashed border-[#5b86b6]/40 bg-[#5b86b6]/5 space-y-4 my-2">
+          <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl font-bold">⚡</div>
+          <div class="space-y-1">
+            <h4 class="font-bold text-base theme-title">长视频素材提取完成（${durationSec} 秒）</h4>
+            <p class="text-xs theme-sub max-w-md mx-auto leading-relaxed">
+              因视频超过第三方 5 分钟限制，我们已为您成功解析并提供了<strong>高清无水印原画视频</strong>与<strong>高保真独立原声音频</strong>。输入免费 Gemini Key 即可<strong>0 门槛免费生成全文逐字稿</strong>。
+            </p>
+          </div>
+          <div class="max-w-md mx-auto space-y-2">
+            <div class="flex items-center gap-2">
+              <input id="inlineGeminiKey" type="password" placeholder="粘贴免费 Gemini API Key (AIzaSy...)"
+                     class="theme-input flex-1 px-3 py-2 rounded-xl border text-xs focus:outline-none focus:ring-2 focus:ring-[#5b86b6]">
+              <button id="btnInlineTranscribe" class="theme-btn-pri px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer">
+                立即免费转写
+              </button>
+            </div>
+            <div class="text-[11px] theme-sub text-left flex items-center justify-between">
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-[#5b86b6] hover:underline flex items-center gap-1">
+                <span>👉 点击前往 Google AI Studio 免费获取 Key</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+              </a>
+              <span class="opacity-60">永久免费 · 免信用卡</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("btnInlineTranscribe").addEventListener("click", async () => {
+        const key = document.getElementById("inlineGeminiKey").value.trim();
+        if (!key) {
+          showToast("请先粘贴免费 Gemini API Key！", "⚠️");
+          return;
+        }
+        safeSetStorage("douyin_gemini_key", key);
+        const btn = document.getElementById("btnInlineTranscribe");
+        btn.disabled = true;
+        btn.innerText = "转写中 (约5s)...";
+
+        try {
+          const text = await transcribeWithGeminiApi(task.audioUrl, key);
+          task.textContent = text;
+          renderResults(task);
+          showToast("逐字稿文案生成成功！", "🎉");
+        } catch (e) {
+          showToast(e.message || "转写失败，请检查 Key 是否有效", "❌");
+          btn.disabled = false;
+          btn.innerText = "重新尝试转写";
+        }
+      });
+    }
+
+    function initEngineSettings() {
+      const modal = document.getElementById("engineModal");
+      const openBtn = document.getElementById("engineSettingsBtn");
+      const closeBtn = document.getElementById("closeEngineModalBtn");
+      const cancelBtn = document.getElementById("btnCancelModal");
+      const saveBtn = document.getElementById("btnSaveKey");
+      const clearBtn = document.getElementById("btnClearKey");
+      const input = document.getElementById("geminiApiKeyInput");
+
+      const savedKey = safeGetStorage("douyin_gemini_key") || "";
+      if (input && savedKey) input.value = savedKey;
+
+      if (openBtn) openBtn.addEventListener("click", () => {
+        const curKey = safeGetStorage("douyin_gemini_key") || "";
+        if (input) input.value = curKey;
+        modal.classList.remove("hidden");
+      });
+
+      const hideModal = () => modal.classList.add("hidden");
+      if (closeBtn) closeBtn.addEventListener("click", hideModal);
+      if (cancelBtn) cancelBtn.addEventListener("click", hideModal);
+
+      if (saveBtn) saveBtn.addEventListener("click", () => {
+        const val = input.value.trim();
+        if (val) {
+          safeSetStorage("douyin_gemini_key", val);
+          showToast("免费 API Key 已保存！", "✅");
+        } else {
+          safeSetStorage("douyin_gemini_key", "");
+          showToast("已清空 API Key 配置", "ℹ️");
+        }
+        hideModal();
+      });
+
+      if (clearBtn) clearBtn.addEventListener("click", () => {
+        safeSetStorage("douyin_gemini_key", "");
+        if (input) input.value = "";
+        showToast("已清空配置", "🗑️");
+        hideModal();
+      });
     }
 
     function finishWithResult(data, rawInputText = "") {
@@ -1331,9 +1579,10 @@ crypto-js/mode-ctr-gladman.js:
       }
     });
 
-    // --- On Load: Initialize Theme and Preloaded Task ---
+    // --- On Load: Initialize Theme, Engine Settings and Preloaded Task ---
     window.addEventListener("DOMContentLoaded", () => {
       initTheme();
+      initEngineSettings();
       document.getElementById("urlInput").value = "3.58 复制打开抖音，看看【知禾有术的作品】客户问“你们和某某家有什么区别”？ 3步回应，把比... https://v.douyin.com/GkqOrmqWLRs/ :7pm 07/06 P@k.pD uSL:/";
       renderResults(PRELOADED_TASK);
     });
