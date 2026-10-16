@@ -123,47 +123,54 @@ async function transcribeAudioWithGemini(audioUrlOrBuffer, geminiApiKey, prompt 
 
   const base64Audio = audioBuffer.toString('base64');
 
-  // 2. Call Gemini 2.0 Flash / 1.5 Flash endpoint
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
+  // 2. Call Gemini Flash endpoint with multiple model fallbacks
+  const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.5-flash-lite'];
+  let lastErr = null;
 
-  const payload = {
-    contents: [{
-      parts: [
-        {
-          inlineData: {
-            mimeType: mimeType,
-            data: base64Audio
+  for (const model of models) {
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+
+    const payload = {
+      contents: [{
+        parts: [
+          {
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Audio
+            }
+          },
+          {
+            text: prompt || "请将这段音频中的语音完整转录为中文文本（逐字稿）。要求：1. 保持发言原意，准确转写；2. 自动添加规范的中文标点符号（逗号、句号、问号、顿号）；3. 根据语意和逻辑停顿合理分段；4. 直接输出转写文本正文，不要输出任何开场白或解释语。"
           }
-        },
-        {
-          text: prompt || "请将这段音频中的语音完整转录为中文文本（逐字稿）。要求：1. 保持发言原意，准确转写；2. 自动添加规范的中文标点符号（逗号、句号、问号、顿号）；3. 根据语意和逻辑停顿合理分段；4. 直接输出转写文本正文，不要输出任何开场白或解释语。"
-        }
-      ]
-    }],
-    generationConfig: {
-      temperature: 0.1,
-      maxOutputTokens: 8192
+        ]
+      }],
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 8192
+      }
+    };
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`[${model}] API 错误 (${response.status}): ${errText}`);
+      }
+
+      const data = await response.json();
+      const transcript = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (transcript) return transcript.trim();
+    } catch (err) {
+      lastErr = err;
+      console.warn(`Model ${model} failed, trying next:`, err.message);
     }
-  };
-
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Gemini API 错误 (${response.status}): ${errText}`);
   }
-
-  const data = await response.json();
-  const transcript = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!transcript) {
-    throw new Error('Gemini 未返回有效的转写内容');
-  }
-
-  return transcript.trim();
+  throw lastErr || new Error('Gemini 未返回有效的转写内容');
 }
 
 module.exports = {

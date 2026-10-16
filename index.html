@@ -1075,25 +1075,44 @@ crypto-js/mode-ctr-gladman.js:
 
           if (data && data.data) {
             const task = data.data;
+            const geminiKey = safeGetStorage("douyin_gemini_key");
+
+            // 1. FAST-TRACK: If audioUrl is available AND user configured a Gemini Key:
+            // Intercept immediately without waiting for slow cloud queue!
+            if (task.audioUrl && geminiKey && task.status !== "SUCCESS") {
+              clearInterval(pollTimer);
+              document.getElementById("statusMessage").innerText = "⚡ 已获取原声音频，正在调用您的 Gemini 免费引擎极速转写...";
+              document.getElementById("progressBar").style.width = "75%";
+              try {
+                const transcript = await transcribeWithGeminiApi(task.audioUrl, geminiKey);
+                task.textContent = transcript;
+                finishWithResult(task, rawInputText);
+                showToast("长视频逐字稿已通过 Gemini 免费转写成功！", "🎉");
+                return;
+              } catch (gErr) {
+                console.warn("Direct Gemini transcribe failed:", gErr);
+                showToast(gErr.message || "Gemini 转写失败，请检查 Key", "❌");
+              }
+            }
+
             if (task.status === "SUCCESS") {
               clearInterval(pollTimer);
               finishWithResult(task, rawInputText);
             } else if (task.status === "FAILURE") {
               clearInterval(pollTimer);
-              const isQuota = task.errorMessage && (
-                task.errorMessage.includes("权益不足") || 
-                task.errorMessage.includes("时长") || 
-                task.errorMessage.includes("会员") ||
-                task.errorMessage.includes("秒")
-              );
-              if (isQuota && task.audioUrl) {
+              // Handle any failure where audioUrl is available via Gemini fallback
+              if (task.audioUrl) {
                 handleQuotaFallback(task, rawInputText);
                 return;
               }
               showToast(task.errorMessage || "文案提取失败，请重试", "❌");
               resetLoading();
             } else {
-              document.getElementById("statusMessage").innerText = (task.errorMessage || "AI 语音正在转写逐字稿...") + " (" + (attempts * 2) + "s)";
+              let msg = task.errorMessage || "AI 语音正在转写逐字稿...";
+              if (attempts > 8) {
+                msg = "长视频作品解析中，正在抓取音视频流... (" + (attempts * 2) + "s)";
+              }
+              document.getElementById("statusMessage").innerText = msg;
               const w = Math.min(95, 65 + attempts * 1);
               document.getElementById("progressBar").style.width = w + "%";
             }
@@ -1112,8 +1131,11 @@ crypto-js/mode-ctr-gladman.js:
 
     // --- 100% Free Gemini Flash Audio Transcription Engine ---
     async function transcribeWithGeminiApi(audioUrl, apiKey) {
+      const statusMessage = document.getElementById("statusMessage");
+      if (statusMessage) statusMessage.innerText = "正在下载原声音频并加载 AI 模型...";
+
       const audioResp = await fetch(audioUrl);
-      if (!audioResp.ok) throw new Error("无法下载音频文件进行转写");
+      if (!audioResp.ok) throw new Error("无法下载音频文件: HTTP " + audioResp.status);
       const blob = await audioResp.blob();
       
       const base64Audio = await new Promise((resolve, reject) => {
@@ -1126,52 +1148,67 @@ crypto-js/mode-ctr-gladman.js:
         reader.readAsDataURL(blob);
       });
 
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-      const payload = {
-        contents: [{
-          parts: [
-            {
-              inlineData: {
-                mimeType: blob.type || "audio/mp3",
-                data: base64Audio
-              }
-            },
-            {
-              text: "请将这段音频中的语音完整转录为中文文本（逐字稿）。要求：1. 保持原声发言原意，准确转写；2. 自动添加规范中文标点（逗号、句号、问号）；3. 根据语意和逻辑停顿合理分段；4. 直接输出转写文本正文，严禁输出任何开场白或解释语。"
+      if (statusMessage) statusMessage.innerText = "正在调用 Gemini Flash 生成精准逐字稿...";
+
+      const modelsToTry = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.5-flash-lite"];
+      let lastErr = null;
+
+      for (const model of modelsToTry) {
+        try {
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const payload = {
+            contents: [{
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: blob.type || "audio/mp3",
+                    data: base64Audio
+                  }
+                },
+                {
+                  text: "请将这段音频中的语音完整转录为中文文本（逐字稿）。要求：1. 保持原声发言原意，准确转写；2. 自动添加规范中文标点（逗号、句号、问号）；3. 根据语意和逻辑停顿合理分段；4. 直接输出转写文本正文，严禁输出任何开场白或解释语。"
+                }
+              ]
+            }],
+            generationConfig: {
+              temperature: 0.1,
+              maxOutputTokens: 8192
             }
-          ]
-        }]
-      };
+          };
 
-      const res = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+          const res = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
 
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error("Gemini API 返回错误: " + res.status);
+          if (!res.ok) {
+            const errBody = await res.text();
+            throw new Error(`[${model}] 响应码 ${res.status}: ${errBody}`);
+          }
+
+          const data = await res.json();
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) return text.trim();
+        } catch (e) {
+          lastErr = e;
+          console.warn(`Model ${model} failed, trying fallback:`, e.message);
+        }
       }
 
-      const data = await res.json();
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) throw new Error("未解析到有效转写文本");
-      return text.trim();
+      throw lastErr || new Error("转写失败，请确认 API Key 是否有效");
     }
 
     async function handleQuotaFallback(task, rawInputText) {
       const statusMessage = document.getElementById("statusMessage");
       const progressBar = document.getElementById("progressBar");
 
-      statusMessage.innerText = "已获取长视频原声音频，正在通过免费引擎生成全文逐字稿...";
+      statusMessage.innerText = "检测到长视频限制，正在调用 Gemini 免费引擎转写逐字稿...";
       progressBar.style.width = "75%";
 
       const geminiKey = safeGetStorage("douyin_gemini_key");
 
       if (geminiKey && task.audioUrl) {
-        statusMessage.innerText = "调用 Gemini 2.0 Flash 极速转写长视频逐字稿 (约5-10秒)...";
-        progressBar.style.width = "85%";
         try {
           const transcript = await transcribeWithGeminiApi(task.audioUrl, geminiKey);
           task.textContent = transcript;
@@ -1180,6 +1217,7 @@ crypto-js/mode-ctr-gladman.js:
           return;
         } catch (err) {
           console.error("Gemini direct transcription failed:", err);
+          showToast(err.message || "Gemini 转写遇到波动，请重试", "⚠️");
         }
       }
 
